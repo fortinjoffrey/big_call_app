@@ -48,3 +48,7 @@ app.*.map.json
 .fvm/
 # Superpowers brainstorm sessions
 .superpowers/
+
+# Signature de release — jamais dans le dépôt
+android/key.properties
+android/allo-release.jks
