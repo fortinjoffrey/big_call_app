@@ -7,6 +7,7 @@ import 'package:big_call_app/domain/ports/speech_service.dart';
 import 'package:big_call_app/presentation/contacts/contacts_event.dart';
 import 'package:big_call_app/presentation/contacts/contacts_state.dart';
 import 'package:bloc_concurrency/bloc_concurrency.dart';
+import 'package:diacritic/diacritic.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class ContactsBloc extends Bloc<ContactsEvent, ContactsState> {
@@ -65,6 +66,11 @@ class ContactsBloc extends Bloc<ContactsEvent, ContactsState> {
 
   Future<void> _onCall(CallRequested event, Emitter<ContactsState> emit) async {
     final result = await _callService.call(event.number);
+    // L'erreur n'est remontée que si la liste est encore à l'écran. Un
+    // rechargement concurrent la ferait disparaître — impossible aujourd'hui,
+    // `ContactsRequested` n'étant émis qu'au démarrage. Si un jour l'app
+    // recharge au retour de premier plan, il faudra décider où loger une
+    // erreur d'appel qui survit à un rechargement, plutôt que de la perdre.
     final current = state;
     if (result is Err<void> && current is ContactsReady) {
       emit(current.copyWith(callError: result.failure));
@@ -80,9 +86,14 @@ class ContactsBloc extends Bloc<ContactsEvent, ContactsState> {
   }
 
   List<PhoneContact> _sorted(List<PhoneContact> contacts) {
+    // Comparer sans accents : `'é'` vaut 233 en UTF-16, au-dessus de toutes
+    // les lettres non accentuées, si bien qu'un tri brut renvoie « Émile »
+    // après « Zoé » — tout en bas d'un répertoire français. Le nom affiché
+    // n'est pas modifié, seule la clé de tri l'est.
+    String key(PhoneContact c) => removeDiacritics(c.displayName).toLowerCase();
+
     final copy = List<PhoneContact>.from(contacts)
-      ..sort((a, b) =>
-          a.displayName.toLowerCase().compareTo(b.displayName.toLowerCase()));
+      ..sort((a, b) => key(a).compareTo(key(b)));
     return copy;
   }
 }

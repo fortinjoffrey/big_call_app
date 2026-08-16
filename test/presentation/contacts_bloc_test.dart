@@ -1,5 +1,7 @@
 import 'package:big_call_app/core/failure.dart';
 import 'package:big_call_app/core/result.dart';
+import 'package:big_call_app/domain/entities/contact_number.dart';
+import 'package:big_call_app/domain/entities/phone_contact.dart';
 import 'package:big_call_app/domain/ports/call_service.dart';
 import 'package:big_call_app/domain/ports/contact_repository.dart';
 import 'package:big_call_app/domain/ports/speech_service.dart';
@@ -129,6 +131,42 @@ void main() {
       isA<ContactsReady>()
           .having((s) => s.callError, 'erreur', const Failure.unavailable()),
       isA<ContactsReady>().having((s) => s.callError, 'erreur effacee', isNull),
+    ],
+  );
+
+  blocTest<ContactsBloc, ContactsState>(
+    'trie les noms accentues a leur place alphabetique',
+    build: () {
+      const emile = PhoneContact(
+        id: '10',
+        displayName: 'Émile',
+        isFavorite: false,
+        numbers: [ContactNumber(number: '0600000001', label: 'Mobile')],
+      );
+      const emma = PhoneContact(
+        id: '11',
+        displayName: 'Emma',
+        isFavorite: false,
+        numbers: [ContactNumber(number: '0600000002', label: 'Mobile')],
+      );
+      const zoe = PhoneContact(
+        id: '12',
+        displayName: 'Zoé',
+        isFavorite: false,
+        numbers: [ContactNumber(number: '0600000003', label: 'Mobile')],
+      );
+      when(() => repository.loadContacts())
+          .thenAnswer((_) async => const Ok([zoe, emile, emma]));
+      return build();
+    },
+    act: (bloc) => bloc.add(const ContactsRequested()),
+    skip: 1,
+    expect: () => [
+      // Sans normalisation, « Émile » finirait après « Zoé ».
+      isA<ContactsReady>().having(
+          (s) => s.others.map((c) => c.displayName).toList(),
+          'ordre alphabetique francais',
+          ['Émile', 'Emma', 'Zoé']),
     ],
   );
 }
