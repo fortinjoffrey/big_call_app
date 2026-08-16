@@ -24,9 +24,10 @@ class ContactCard extends StatelessWidget {
   final void Function(ContactNumber number) onCall;
 
   /// Vrai dans les styles « section » et « bouton rouge » : les numéros
-  /// d'urgence portés par [contact] reçoivent un bouton rouge qui n'appelle
-  /// que sur double appui. Faux dans le style « comme les autres contacts » :
-  /// même un numéro d'urgence garde alors un bouton vert à appui simple.
+  /// d'urgence portés par [contact] reçoivent un bouton rouge, appelé sur un
+  /// appui simple exactement comme n'importe quel autre bouton — le rouge
+  /// n'est plus qu'un repère visuel. Faux dans le style « comme les autres
+  /// contacts » : même un numéro d'urgence garde alors un bouton vert.
   final bool highlightEmergencyNumbers;
 
   @override
@@ -47,34 +48,6 @@ class ContactCard extends StatelessWidget {
 
   bool _isRed(ContactNumber number) =>
       highlightEmergencyNumbers && number.isEmergency;
-
-  /// Le rond rouge d'un numéro d'urgence n'appelle jamais sur un simple
-  /// appui : ce mécanisme, éprouvé par l'ancienne carte SAMU, entoure le
-  /// bouton visuel (neutralisé par [IgnorePointer]/[ExcludeSemantics]) d'un
-  /// [GestureDetector] qui combine `onTap` (parle) et `onDoubleTap` (appelle).
-  /// Un bouton vert ordinaire, lui, garde son comportement propre — appui
-  /// simple immédiat, géré par son propre `onPressed`.
-  Widget _buttonZone({
-    required ContactNumber number,
-    required String semanticLabel,
-    required String speakText,
-    required Widget button,
-  }) {
-    if (!_isRed(number)) return button;
-
-    return Semantics(
-      button: true,
-      label: '$semanticLabel, appuyez deux fois pour appeler',
-      child: GestureDetector(
-        behavior: HitTestBehavior.opaque,
-        onTap: () => onSpeak(speakText),
-        onDoubleTap: () => onCall(number),
-        child: ExcludeSemantics(
-          child: IgnorePointer(child: button),
-        ),
-      ),
-    );
-  }
 
   /// Un seul numéro : nom et bouton sur la même ligne, sans libellé.
   Widget _singleNumberRow(ThemeData theme, PaletteColors colors) {
@@ -104,16 +77,11 @@ class ContactCard extends StatelessWidget {
             ),
           ),
         ),
-        _buttonZone(
-          number: number,
-          semanticLabel: contact.displayName,
-          speakText: contact.displayName,
-          button: CallButton(
-            palette: palette,
-            color: _isRed(number) ? colors.emergency : null,
-            semanticLabel: 'Appeler ${contact.displayName}',
-            onPressed: () => onCall(number),
-          ),
+        CallButton(
+          palette: palette,
+          color: _isRed(number) ? colors.emergency : null,
+          semanticLabel: 'Appeler ${contact.displayName}',
+          onPressed: () => onCall(number),
         ),
       ],
     );
@@ -171,17 +139,12 @@ class ContactCard extends StatelessWidget {
                     ),
                   ),
                 ),
-                _buttonZone(
-                  number: number,
-                  semanticLabel: '${contact.displayName} ${number.label}',
-                  speakText: '${contact.displayName} ${number.label}',
-                  button: CallButton(
-                    palette: palette,
-                    color: _isRed(number) ? colors.emergency : null,
-                    semanticLabel:
-                        'Appeler ${contact.displayName} ${number.label}',
-                    onPressed: () => onCall(number),
-                  ),
+                CallButton(
+                  palette: palette,
+                  color: _isRed(number) ? colors.emergency : null,
+                  semanticLabel:
+                      'Appeler ${contact.displayName} ${number.label}',
+                  onPressed: () => onCall(number),
                 ),
               ],
             ),
@@ -206,22 +169,13 @@ class ContactCard extends StatelessWidget {
             _labelZone(theme, number),
             const SizedBox(height: 8),
           ],
-          _buttonZone(
-            number: number,
+          FullWidthCallButton(
+            palette: palette,
+            color: _isRed(number) ? colors.emergency : null,
             semanticLabel: contact.hasSingleNumber
-                ? contact.displayName
-                : '${contact.displayName} ${number.label}',
-            speakText: contact.hasSingleNumber
-                ? contact.displayName
-                : '${contact.displayName} ${number.label}',
-            button: FullWidthCallButton(
-              palette: palette,
-              color: _isRed(number) ? colors.emergency : null,
-              semanticLabel: contact.hasSingleNumber
-                  ? 'Appeler ${contact.displayName}'
-                  : 'Appeler ${contact.displayName} ${number.label}',
-              onPressed: () => onCall(number),
-            ),
+                ? 'Appeler ${contact.displayName}'
+                : 'Appeler ${contact.displayName} ${number.label}',
+            onPressed: () => onCall(number),
           ),
         ],
       ],

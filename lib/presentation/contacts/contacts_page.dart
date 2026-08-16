@@ -70,9 +70,9 @@ class ContactsPage extends StatelessWidget {
     final bloc = context.read<ContactsBloc>();
 
     // Dans les styles « section » et « bouton rouge », le bouton d'un numéro
-    // d'urgence est rouge et n'appelle que sur double appui. Dans « comme les
-    // autres contacts », il reste vert à appui simple, même sur un numéro
-    // d'urgence.
+    // d'urgence est rouge — un simple repère visuel, l'appui simple appelle
+    // comme n'importe quel autre bouton. Dans « comme les autres contacts »,
+    // il reste vert, même sur un numéro d'urgence.
     final highlight = emergencyStyle != EmergencyStyle.none;
 
     Widget card(PhoneContact contact) => ContactCard(
