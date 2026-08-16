@@ -39,6 +39,11 @@ void main() {
     expect: () => [
       const AppSettings(palette: AppPalette.light, textSize: TextSize.xl),
     ],
+    verify: (_) {
+      verify(() => repository.save(
+            const AppSettings(palette: AppPalette.light, textSize: TextSize.xl),
+          )).called(1);
+    },
   );
 
   blocTest<SettingsBloc, AppSettings>(
