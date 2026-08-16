@@ -50,8 +50,11 @@ class SettingsPage extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              _Preview(settings: settings),
-              const SizedBox(height: 20),
+              _Section(
+                title: 'Aperçu',
+                palette: settings.palette,
+                tiles: [_Preview(settings: settings)],
+              ),
               _Section(
                 title: 'Thème',
                 palette: settings.palette,
