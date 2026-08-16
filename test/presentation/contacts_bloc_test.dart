@@ -80,8 +80,12 @@ void main() {
     expect: () => [const ContactsLoading(), const ContactsPermissionDenied()],
   );
 
+  // Ce test prouve l'ORDRE stop→speak, qui est le mécanisme réel de
+  // l'interruption. Il ne teste pas `restartable()` : avec un `speak` simulé
+  // qui rend la main immédiatement, les deux gestionnaires ne se chevauchent
+  // jamais, et retirer le transformer laisse ce test au vert.
   blocTest<ContactsBloc, ContactsState>(
-    'une nouvelle parole coupe la precedente',
+    'chaque parole commence par couper la precedente (stop avant speak)',
     build: build,
     act: (bloc) async {
       bloc.add(const LabelSpoken('Marie'));

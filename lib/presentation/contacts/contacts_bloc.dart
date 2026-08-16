@@ -13,9 +13,12 @@ class ContactsBloc extends Bloc<ContactsEvent, ContactsState> {
   ContactsBloc(this._repository, this._callService, this._speech)
       : super(const ContactsLoading()) {
     on<ContactsRequested>(_onRequested);
-    // restartable() annule le traitement précédent : la règle « toute nouvelle
-    // parole coupe la précédente » est portée par le transformer, pas par du
-    // code défensif dans l'adapter TTS.
+    // C'est le `stop()` en tête de `_onSpoken` qui coupe la parole en cours —
+    // pas ce transformer. `restartable()` annule la suite d'un gestionnaire
+    // interrompu, or `speak()` est sa dernière instruction : il n'y a rien à
+    // annuler après. On le garde parce qu'il évite l'empilement de
+    // gestionnaires si `speak` devient lent, mais ne pas supprimer le `stop()`
+    // en croyant qu'il fait doublon.
     on<LabelSpoken>(_onSpoken, transformer: restartable());
     on<CallRequested>(_onCall);
     on<CallErrorDismissed>(_onErrorDismissed);
