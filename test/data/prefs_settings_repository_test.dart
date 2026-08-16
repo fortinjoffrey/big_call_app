@@ -21,6 +21,7 @@ void main() {
       palette: AppPalette.yellow,
       textSize: TextSize.xl,
       layout: ContactLayout.wide,
+      emergencyStyle: EmergencyStyle.highlight,
     );
     await repo.save(settings);
 
@@ -32,6 +33,7 @@ void main() {
       'palette': 'fuchsia',
       'textSize': 'gigantesque',
       'layout': 'diagonale',
+      'emergencyStyle': 'clignotant',
     });
     final repo = PrefsSettingsRepository(await SharedPreferences.getInstance());
 
@@ -60,5 +62,18 @@ void main() {
     expect(settings.layout, ContactLayout.wide);
     expect(settings.palette, kDefaultSettings.palette);
     expect(settings.textSize, kDefaultSettings.textSize);
+  });
+
+  test('le style d urgence survit a des champs voisins invalides', () async {
+    SharedPreferences.setMockInitialValues({
+      'emergencyStyle': 'highlight',
+      'palette': 'fuchsia',
+    });
+    final repo = PrefsSettingsRepository(await SharedPreferences.getInstance());
+
+    final settings = await repo.load();
+
+    expect(settings.emergencyStyle, EmergencyStyle.highlight);
+    expect(settings.palette, kDefaultSettings.palette);
   });
 }

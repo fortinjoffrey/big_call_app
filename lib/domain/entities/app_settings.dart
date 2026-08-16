@@ -37,12 +37,23 @@ extension TextSizeScale on TextSize {
       };
 }
 
+enum EmergencyStyle { section, highlight, none }
+
+extension EmergencyStyleLabel on EmergencyStyle {
+  String get label => switch (this) {
+        EmergencyStyle.section => 'Dans une section à part',
+        EmergencyStyle.highlight => 'Bouton rouge, à leur place',
+        EmergencyStyle.none => 'Comme les autres contacts',
+      };
+}
+
 @freezed
 abstract class AppSettings with _$AppSettings {
   const factory AppSettings({
     required AppPalette palette,
     required TextSize textSize,
     required ContactLayout layout,
+    required EmergencyStyle emergencyStyle,
   }) = _AppSettings;
 }
 
@@ -50,4 +61,5 @@ const kDefaultSettings = AppSettings(
   palette: AppPalette.light,
   textSize: TextSize.m,
   layout: ContactLayout.compact,
+  emergencyStyle: EmergencyStyle.section,
 );

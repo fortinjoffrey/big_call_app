@@ -207,8 +207,8 @@ return $default(_that.number,_that.label);case _:
 /// @nodoc
 
 
-class _ContactNumber implements ContactNumber {
-  const _ContactNumber({required this.number, required this.label});
+class _ContactNumber extends ContactNumber {
+  const _ContactNumber({required this.number, required this.label}): super._();
   
 
 @override final  String number;

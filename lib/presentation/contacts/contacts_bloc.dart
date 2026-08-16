@@ -27,7 +27,6 @@ class ContactsBloc extends Bloc<ContactsEvent, ContactsState> {
     // en croyant qu'il fait doublon.
     on<LabelSpoken>(_onSpoken, transformer: restartable());
     on<CallRequested>(_onCall);
-    on<EmergencyCallRequested>(_onEmergencyCall);
     on<CallErrorDismissed>(_onErrorDismissed);
     on<SystemSettingsRequested>(
         (event, emit) => _systemSettings.openAppSettings());
@@ -75,14 +74,6 @@ class ContactsBloc extends Bloc<ContactsEvent, ContactsState> {
 
   Future<void> _onCall(CallRequested event, Emitter<ContactsState> emit) =>
       _call(event.number, emit);
-
-  /// Le 15 (SAMU), fixe : ce n'est jamais un numéro choisi par l'appelant,
-  /// donc il ne transite pas par l'événement.
-  Future<void> _onEmergencyCall(
-    EmergencyCallRequested event,
-    Emitter<ContactsState> emit,
-  ) =>
-      _call('15', emit);
 
   Future<void> _call(String number, Emitter<ContactsState> emit) async {
     final result = await _callService.call(number);

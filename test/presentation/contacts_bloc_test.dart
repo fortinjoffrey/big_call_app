@@ -143,16 +143,6 @@ void main() {
   );
 
   blocTest<ContactsBloc, ContactsState>(
-    'le double appui sur la carte SAMU compose le 15',
-    build: build,
-    act: (bloc) => bloc.add(const EmergencyCallRequested()),
-    expect: () => <ContactsState>[],
-    verify: (_) {
-      verify(() => callService.call('15')).called(1);
-    },
-  );
-
-  blocTest<ContactsBloc, ContactsState>(
     'demande d ouverture des reglages systeme appelle le port sans emettre d etat',
     build: build,
     act: (bloc) => bloc.add(const SystemSettingsRequested()),

@@ -1,12 +1,12 @@
 import 'package:big_call_app/core/failure.dart';
 import 'package:big_call_app/core/theme/app_palettes.dart';
+import 'package:big_call_app/domain/emergency_grouping.dart';
 import 'package:big_call_app/domain/entities/app_settings.dart';
 import 'package:big_call_app/domain/entities/phone_contact.dart';
 import 'package:big_call_app/presentation/contacts/contacts_bloc.dart';
 import 'package:big_call_app/presentation/contacts/contacts_event.dart';
 import 'package:big_call_app/presentation/contacts/contacts_state.dart';
 import 'package:big_call_app/presentation/contacts/widgets/contact_card.dart';
-import 'package:big_call_app/presentation/contacts/widgets/emergency_card.dart';
 import 'package:big_call_app/presentation/contacts/widgets/message_screen.dart';
 import 'package:big_call_app/presentation/contacts/widgets/section_header.dart';
 import 'package:big_call_app/presentation/settings/settings_page.dart';
@@ -14,10 +14,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class ContactsPage extends StatelessWidget {
-  const ContactsPage({required this.palette, required this.layout, super.key});
+  const ContactsPage({
+    required this.palette,
+    required this.layout,
+    required this.emergencyStyle,
+    super.key,
+  });
 
   final AppPalette palette;
   final ContactLayout layout;
+  final EmergencyStyle emergencyStyle;
 
   @override
   Widget build(BuildContext context) {
@@ -63,13 +69,31 @@ class ContactsPage extends StatelessWidget {
   Widget _buildList(BuildContext context, ContactsReady state) {
     final bloc = context.read<ContactsBloc>();
 
+    // Dans les styles « section » et « bouton rouge », le bouton d'un numéro
+    // d'urgence est rouge et n'appelle que sur double appui. Dans « comme les
+    // autres contacts », il reste vert à appui simple, même sur un numéro
+    // d'urgence.
+    final highlight = emergencyStyle != EmergencyStyle.none;
+
     Widget card(PhoneContact contact) => ContactCard(
           contact: contact,
           palette: palette,
           layout: layout,
+          highlightEmergencyNumbers: highlight,
           onSpeak: (text) => bloc.add(LabelSpoken(text)),
           onCall: (number) => bloc.add(CallRequested(number.number)),
         );
+
+    // Style « section » : les contacts porteurs d'un numéro d'urgence
+    // quittent leur groupe d'origine (favoris ou tous) pour former une
+    // section à part, placée entre les favoris et « TOUS LES CONTACTS ».
+    // Dans les deux autres styles, personne ne bouge.
+    final useSection = emergencyStyle == EmergencyStyle.section;
+    final favorites = useSection ? withoutEmergency(state.favorites) : state.favorites;
+    final others = useSection ? withoutEmergency(state.others) : state.others;
+    final emergency = useSection
+        ? [...emergencyAmong(state.favorites), ...emergencyAmong(state.others)]
+        : const <PhoneContact>[];
 
     final children = <Widget>[
       if (state.showFavoritesSection) ...[
@@ -79,14 +103,16 @@ class ContactsPage extends StatelessWidget {
           palette: palette,
           onLongPress: () => _openSettings(context),
         ),
-        ...state.favorites.map(card),
+        ...favorites.map(card),
       ],
-      EmergencyCard(
-        palette: palette,
-        layout: layout,
-        onSpeak: () => bloc.add(const LabelSpoken('SAMU')),
-        onCall: () => bloc.add(const EmergencyCallRequested()),
-      ),
+      if (emergency.isNotEmpty) ...[
+        SectionHeader(
+          title: 'Urgence',
+          icon: Icons.local_hospital,
+          palette: palette,
+        ),
+        ...emergency.map(card),
+      ],
       SectionHeader(
         title: 'Tous les contacts',
         palette: palette,
@@ -95,7 +121,7 @@ class ContactsPage extends StatelessWidget {
         onLongPress:
             state.showFavoritesSection ? null : () => _openSettings(context),
       ),
-      ...state.others.map(card),
+      ...others.map(card),
     ];
 
     return ListView.builder(

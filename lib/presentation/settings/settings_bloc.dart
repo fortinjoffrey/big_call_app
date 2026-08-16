@@ -24,6 +24,12 @@ class SettingsBloc extends Bloc<SettingsEvent, AppSettings> {
       emit(next);
       await _repository.save(next);
     });
+
+    on<EmergencyStyleSelected>((event, emit) async {
+      final next = state.copyWith(emergencyStyle: event.emergencyStyle);
+      emit(next);
+      await _repository.save(next);
+    });
   }
 
   final SettingsRepository _repository;

@@ -1,8 +1,10 @@
 import 'package:big_call_app/core/theme/app_theme.dart';
 import 'package:big_call_app/domain/entities/app_settings.dart';
 import 'package:big_call_app/domain/entities/contact_number.dart';
+import 'package:big_call_app/domain/entities/phone_contact.dart';
 import 'package:big_call_app/presentation/contacts/widgets/call_button.dart';
 import 'package:big_call_app/presentation/contacts/widgets/contact_card.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -198,6 +200,85 @@ void main() {
 
       await tester.tap(find.byType(FullWidthCallButton).first);
       expect(called.single.number, '0611223344');
+    });
+  });
+
+  group('mise en avant des numeros d urgence', () {
+    const contact = PhoneContact(
+      id: 'urgence',
+      displayName: 'Docteur Martin',
+      isFavorite: false,
+      numbers: [
+        ContactNumber(number: '0144556677', label: 'Bureau'),
+        ContactNumber(number: '15', label: 'Urgences'),
+      ],
+    );
+
+    Widget urgenceHost({
+      required void Function(String) onSpeak,
+      required void Function(ContactNumber) onCall,
+    }) {
+      return MaterialApp(
+        theme: buildTheme(AppPalette.light, TextSize.m),
+        home: Scaffold(
+          body: ContactCard(
+            contact: contact,
+            palette: AppPalette.light,
+            layout: ContactLayout.compact,
+            highlightEmergencyNumbers: true,
+            onSpeak: onSpeak,
+            onCall: onCall,
+          ),
+        ),
+      );
+    }
+
+    testWidgets('un simple appui sur le bouton rouge n appelle jamais',
+        (tester) async {
+      final spoken = <String>[];
+      final called = <ContactNumber>[];
+      await tester.pumpWidget(
+        urgenceHost(onSpeak: spoken.add, onCall: called.add),
+      );
+
+      // Le bouton rouge est enveloppé d'un `IgnorePointer` : il faut donc
+      // taper sur les coordonnées du bouton, comme pour l'ancienne carte
+      // SAMU.
+      final redButton = find.byType(CallButton).last;
+      await tester.tapAt(tester.getCenter(redButton));
+      await tester.pump(kDoubleTapTimeout);
+
+      expect(called, isEmpty,
+          reason: 'un appui simple ne doit jamais declencher un appel d urgence');
+    });
+
+    testWidgets('un double appui sur le bouton rouge appelle le numero d urgence',
+        (tester) async {
+      final called = <ContactNumber>[];
+      await tester.pumpWidget(
+        urgenceHost(onSpeak: (_) {}, onCall: called.add),
+      );
+
+      final redButton = find.byType(CallButton).last;
+      await tester.tapAt(tester.getCenter(redButton));
+      await tester.pump(kDoubleTapMinTime);
+      await tester.tapAt(tester.getCenter(redButton));
+      await tester.pumpAndSettle();
+
+      expect(called.single.number, '15');
+    });
+
+    testWidgets('le bouton vert du numero ordinaire appelle toujours sur un simple appui',
+        (tester) async {
+      final called = <ContactNumber>[];
+      await tester.pumpWidget(
+        urgenceHost(onSpeak: (_) {}, onCall: called.add),
+      );
+
+      final greenButton = find.byType(CallButton).first;
+      await tester.tap(greenButton);
+
+      expect(called.single.number, '0144556677');
     });
   });
 }

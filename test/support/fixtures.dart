@@ -33,4 +33,12 @@ const anneMarie = PhoneContact(
   numbers: [ContactNumber(number: '0633445566', label: 'Mobile')],
 );
 
+/// Contact porteur d'un numéro d'urgence (15, SAMU).
+const samu = PhoneContact(
+  id: '5',
+  displayName: 'SAMU',
+  isFavorite: true,
+  numbers: [ContactNumber(number: '15', label: 'Fixe')],
+);
+
 const allContacts = [marie, joffrey, docteur, anneMarie];

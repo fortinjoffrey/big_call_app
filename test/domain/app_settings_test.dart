@@ -18,10 +18,17 @@ void main() {
     expect(kDefaultSettings.palette, AppPalette.light);
     expect(kDefaultSettings.textSize, TextSize.m);
     expect(kDefaultSettings.layout, ContactLayout.compact);
+    expect(kDefaultSettings.emergencyStyle, EmergencyStyle.section);
   });
 
   test('les libelles de disposition decrivent la position du bouton', () {
     expect(ContactLayout.compact.label, 'Bouton à droite');
     expect(ContactLayout.wide.label, 'Bouton en dessous');
+  });
+
+  test('les libelles de style d urgence decrivent chaque presentation', () {
+    expect(EmergencyStyle.section.label, 'Dans une section à part');
+    expect(EmergencyStyle.highlight.label, 'Bouton rouge, à leur place');
+    expect(EmergencyStyle.none.label, 'Comme les autres contacts');
   });
 }

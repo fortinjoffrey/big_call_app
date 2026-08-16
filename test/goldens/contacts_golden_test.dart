@@ -45,12 +45,21 @@ void main() {
     addTearDown(tester.view.reset);
   }
 
-  Widget host(AppPalette palette, TextSize size, {ContactLayout layout = ContactLayout.compact}) =>
+  Widget host(
+    AppPalette palette,
+    TextSize size, {
+    ContactLayout layout = ContactLayout.compact,
+    EmergencyStyle emergencyStyle = EmergencyStyle.section,
+  }) =>
       BlocProvider<ContactsBloc>.value(
         value: bloc,
         child: MaterialApp(
           theme: buildTheme(palette, size),
-          home: ContactsPage(palette: palette, layout: layout),
+          home: ContactsPage(
+            palette: palette,
+            layout: layout,
+            emergencyStyle: emergencyStyle,
+          ),
         ),
       );
 
@@ -84,4 +93,23 @@ void main() {
       );
     });
   }
+
+  // Un contact d'urgence (SAMU, numéro 15) parmi les favoris fait apparaître
+  // la section « URGENCE », propre au style `section` : ce golden est le
+  // seul à en montrer une.
+  testWidgets('contacts urgence light m', (tester) async {
+    useGoldenSurface(tester);
+    when(() => bloc.state).thenReturn(const ContactsReady(
+      favorites: [joffrey, samu, marie],
+      others: [anneMarie, docteur],
+      showFavoritesSection: true,
+    ));
+
+    await tester.pumpWidget(host(AppPalette.light, TextSize.m));
+
+    await expectLater(
+      find.byType(ContactsPage),
+      matchesGoldenFile('contacts_urgence_light_m.png'),
+    );
+  });
 }

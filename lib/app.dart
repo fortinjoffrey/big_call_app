@@ -60,6 +60,7 @@ class BigCallApp extends StatelessWidget {
               child: ContactsPage(
                 palette: settings.palette,
                 layout: settings.layout,
+                emergencyStyle: settings.emergencyStyle,
               ),
             ),
           );

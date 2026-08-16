@@ -36,6 +36,7 @@ void main() {
       palette: palette,
       textSize: size,
       layout: ContactLayout.compact,
+      emergencyStyle: EmergencyStyle.section,
     );
     bloc = _MockSettingsBloc();
     when(() => bloc.state).thenReturn(settings);

@@ -39,3 +39,15 @@ final class LayoutSelected extends SettingsEvent {
   @override
   int get hashCode => layout.hashCode;
 }
+
+final class EmergencyStyleSelected extends SettingsEvent {
+  const EmergencyStyleSelected(this.emergencyStyle);
+  final EmergencyStyle emergencyStyle;
+
+  @override
+  bool operator ==(Object other) =>
+      other is EmergencyStyleSelected && other.emergencyStyle == emergencyStyle;
+
+  @override
+  int get hashCode => emergencyStyle.hashCode;
+}

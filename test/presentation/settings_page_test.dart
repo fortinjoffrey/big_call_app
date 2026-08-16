@@ -83,6 +83,25 @@ void main() {
     verify(() => bloc.add(const LayoutSelected(ContactLayout.wide))).called(1);
   });
 
+  testWidgets('propose les trois styles de numeros d urgence', (tester) async {
+    useTallSurface(tester);
+    await tester.pumpWidget(host());
+
+    expect(find.text('Dans une section à part'), findsOneWidget);
+    expect(find.text('Bouton rouge, à leur place'), findsOneWidget);
+    expect(find.text('Comme les autres contacts'), findsOneWidget);
+  });
+
+  testWidgets('choisir un style d urgence emet EmergencyStyleSelected',
+      (tester) async {
+    useTallSurface(tester);
+    await tester.pumpWidget(host());
+
+    await tester.tap(find.text('Bouton rouge, à leur place'));
+    verify(() => bloc.add(const EmergencyStyleSelected(EmergencyStyle.highlight)))
+        .called(1);
+  });
+
   testWidgets('affiche un apercu en direct', (tester) async {
     useTallSurface(tester);
     await tester.pumpWidget(host());
@@ -98,6 +117,7 @@ void main() {
         palette: AppPalette.dark,
         textSize: TextSize.xl,
         layout: ContactLayout.compact,
+        emergencyStyle: EmergencyStyle.section,
       ),
     );
 

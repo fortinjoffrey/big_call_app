@@ -14,7 +14,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$AppSettings {
 
- AppPalette get palette; TextSize get textSize; ContactLayout get layout;
+ AppPalette get palette; TextSize get textSize; ContactLayout get layout; EmergencyStyle get emergencyStyle;
 /// Create a copy of AppSettings
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -25,16 +25,16 @@ $AppSettingsCopyWith<AppSettings> get copyWith => _$AppSettingsCopyWithImpl<AppS
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is AppSettings&&(identical(other.palette, palette) || other.palette == palette)&&(identical(other.textSize, textSize) || other.textSize == textSize)&&(identical(other.layout, layout) || other.layout == layout));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is AppSettings&&(identical(other.palette, palette) || other.palette == palette)&&(identical(other.textSize, textSize) || other.textSize == textSize)&&(identical(other.layout, layout) || other.layout == layout)&&(identical(other.emergencyStyle, emergencyStyle) || other.emergencyStyle == emergencyStyle));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,palette,textSize,layout);
+int get hashCode => Object.hash(runtimeType,palette,textSize,layout,emergencyStyle);
 
 @override
 String toString() {
-  return 'AppSettings(palette: $palette, textSize: $textSize, layout: $layout)';
+  return 'AppSettings(palette: $palette, textSize: $textSize, layout: $layout, emergencyStyle: $emergencyStyle)';
 }
 
 
@@ -45,7 +45,7 @@ abstract mixin class $AppSettingsCopyWith<$Res>  {
   factory $AppSettingsCopyWith(AppSettings value, $Res Function(AppSettings) _then) = _$AppSettingsCopyWithImpl;
 @useResult
 $Res call({
- AppPalette palette, TextSize textSize, ContactLayout layout
+ AppPalette palette, TextSize textSize, ContactLayout layout, EmergencyStyle emergencyStyle
 });
 
 
@@ -62,12 +62,13 @@ class _$AppSettingsCopyWithImpl<$Res>
 
 /// Create a copy of AppSettings
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? palette = null,Object? textSize = null,Object? layout = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? palette = null,Object? textSize = null,Object? layout = null,Object? emergencyStyle = null,}) {
   return _then(_self.copyWith(
 palette: null == palette ? _self.palette : palette // ignore: cast_nullable_to_non_nullable
 as AppPalette,textSize: null == textSize ? _self.textSize : textSize // ignore: cast_nullable_to_non_nullable
 as TextSize,layout: null == layout ? _self.layout : layout // ignore: cast_nullable_to_non_nullable
-as ContactLayout,
+as ContactLayout,emergencyStyle: null == emergencyStyle ? _self.emergencyStyle : emergencyStyle // ignore: cast_nullable_to_non_nullable
+as EmergencyStyle,
   ));
 }
 
@@ -152,10 +153,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( AppPalette palette,  TextSize textSize,  ContactLayout layout)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( AppPalette palette,  TextSize textSize,  ContactLayout layout,  EmergencyStyle emergencyStyle)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _AppSettings() when $default != null:
-return $default(_that.palette,_that.textSize,_that.layout);case _:
+return $default(_that.palette,_that.textSize,_that.layout,_that.emergencyStyle);case _:
   return orElse();
 
 }
@@ -173,10 +174,10 @@ return $default(_that.palette,_that.textSize,_that.layout);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( AppPalette palette,  TextSize textSize,  ContactLayout layout)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( AppPalette palette,  TextSize textSize,  ContactLayout layout,  EmergencyStyle emergencyStyle)  $default,) {final _that = this;
 switch (_that) {
 case _AppSettings():
-return $default(_that.palette,_that.textSize,_that.layout);case _:
+return $default(_that.palette,_that.textSize,_that.layout,_that.emergencyStyle);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -193,10 +194,10 @@ return $default(_that.palette,_that.textSize,_that.layout);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( AppPalette palette,  TextSize textSize,  ContactLayout layout)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( AppPalette palette,  TextSize textSize,  ContactLayout layout,  EmergencyStyle emergencyStyle)?  $default,) {final _that = this;
 switch (_that) {
 case _AppSettings() when $default != null:
-return $default(_that.palette,_that.textSize,_that.layout);case _:
+return $default(_that.palette,_that.textSize,_that.layout,_that.emergencyStyle);case _:
   return null;
 
 }
@@ -208,12 +209,13 @@ return $default(_that.palette,_that.textSize,_that.layout);case _:
 
 
 class _AppSettings implements AppSettings {
-  const _AppSettings({required this.palette, required this.textSize, required this.layout});
+  const _AppSettings({required this.palette, required this.textSize, required this.layout, required this.emergencyStyle});
   
 
 @override final  AppPalette palette;
 @override final  TextSize textSize;
 @override final  ContactLayout layout;
+@override final  EmergencyStyle emergencyStyle;
 
 /// Create a copy of AppSettings
 /// with the given fields replaced by the non-null parameter values.
@@ -225,16 +227,16 @@ _$AppSettingsCopyWith<_AppSettings> get copyWith => __$AppSettingsCopyWithImpl<_
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _AppSettings&&(identical(other.palette, palette) || other.palette == palette)&&(identical(other.textSize, textSize) || other.textSize == textSize)&&(identical(other.layout, layout) || other.layout == layout));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _AppSettings&&(identical(other.palette, palette) || other.palette == palette)&&(identical(other.textSize, textSize) || other.textSize == textSize)&&(identical(other.layout, layout) || other.layout == layout)&&(identical(other.emergencyStyle, emergencyStyle) || other.emergencyStyle == emergencyStyle));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,palette,textSize,layout);
+int get hashCode => Object.hash(runtimeType,palette,textSize,layout,emergencyStyle);
 
 @override
 String toString() {
-  return 'AppSettings(palette: $palette, textSize: $textSize, layout: $layout)';
+  return 'AppSettings(palette: $palette, textSize: $textSize, layout: $layout, emergencyStyle: $emergencyStyle)';
 }
 
 
@@ -245,7 +247,7 @@ abstract mixin class _$AppSettingsCopyWith<$Res> implements $AppSettingsCopyWith
   factory _$AppSettingsCopyWith(_AppSettings value, $Res Function(_AppSettings) _then) = __$AppSettingsCopyWithImpl;
 @override @useResult
 $Res call({
- AppPalette palette, TextSize textSize, ContactLayout layout
+ AppPalette palette, TextSize textSize, ContactLayout layout, EmergencyStyle emergencyStyle
 });
 
 
@@ -262,12 +264,13 @@ class __$AppSettingsCopyWithImpl<$Res>
 
 /// Create a copy of AppSettings
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? palette = null,Object? textSize = null,Object? layout = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? palette = null,Object? textSize = null,Object? layout = null,Object? emergencyStyle = null,}) {
   return _then(_AppSettings(
 palette: null == palette ? _self.palette : palette // ignore: cast_nullable_to_non_nullable
 as AppPalette,textSize: null == textSize ? _self.textSize : textSize // ignore: cast_nullable_to_non_nullable
 as TextSize,layout: null == layout ? _self.layout : layout // ignore: cast_nullable_to_non_nullable
-as ContactLayout,
+as ContactLayout,emergencyStyle: null == emergencyStyle ? _self.emergencyStyle : emergencyStyle // ignore: cast_nullable_to_non_nullable
+as EmergencyStyle,
   ));
 }
 

@@ -99,6 +99,18 @@ class SettingsPage extends StatelessWidget {
                   onTap: () =>
                       context.read<SettingsBloc>().add(LayoutSelected(layout)),
                 ),
+              const SizedBox(height: 28),
+              Text("Numéros d'urgence", style: theme.textTheme.titleLarge),
+              const SizedBox(height: 8),
+              for (final style in EmergencyStyle.values)
+                _ChoiceTile(
+                  label: style.label,
+                  selected: style == settings.emergencyStyle,
+                  palette: settings.palette,
+                  onTap: () => context
+                      .read<SettingsBloc>()
+                      .add(EmergencyStyleSelected(style)),
+                ),
             ],
           ),
         ),
