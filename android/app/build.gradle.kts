@@ -6,7 +6,10 @@ plugins {
 
 android {
     namespace = "com.example.big_call_app"
-    compileSdk = flutter.compileSdkVersion
+    // 37 et non `flutter.compileSdkVersion` : permission_handler_android exige
+    // de compiler contre l'API 37 ou plus récente. Revenir au défaut casse la
+    // compilation.
+    compileSdk = 37
     ndkVersion = flutter.ndkVersion
 
     compileOptions {

@@ -66,5 +66,11 @@
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
+	<key>NSContactsUsageDescription</key>
+	<string>L'application affiche vos contacts pour vous permettre de les appeler.</string>
+	<key>LSApplicationQueriesSchemes</key>
+	<array>
+		<string>tel</string>
+	</array>
 </dict>
 </plist>
