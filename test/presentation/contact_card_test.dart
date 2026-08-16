@@ -37,8 +37,9 @@ void main() {
     expect(spoken, ['Marie']);
   });
 
-  testWidgets('toucher un libelle prononce le nom suivi du libelle',
-      (tester) async {
+  testWidgets('toucher un libelle prononce le nom suivi du libelle', (
+    tester,
+  ) async {
     final spoken = <String>[];
     await tester.pumpWidget(host(onSpeak: spoken.add, onCall: (_) {}));
 
@@ -46,8 +47,9 @@ void main() {
     expect(spoken, ['Marie Mobile']);
   });
 
-  testWidgets('toucher le bouton vert appelle et ne prononce rien',
-      (tester) async {
+  testWidgets('toucher le bouton vert appelle et ne prononce rien', (
+    tester,
+  ) async {
     final spoken = <String>[];
     final called = <ContactNumber>[];
     await tester.pumpWidget(host(onSpeak: spoken.add, onCall: called.add));
@@ -55,40 +57,40 @@ void main() {
     await tester.tap(find.byType(CallButton).first);
 
     expect(called.single.number, '0611223344');
-    expect(spoken, isEmpty,
-        reason: 'un appui sur le bouton ne doit pas remonter a la zone parole');
+    expect(
+      spoken,
+      isEmpty,
+      reason: 'un appui sur le bouton ne doit pas remonter a la zone parole',
+    );
   });
 
-  testWidgets('toucher a droite du nom, dans le vide, prononce quand meme',
-      (tester) async {
+  testWidgets('toucher a droite du nom, dans le vide, prononce quand meme', (
+    tester,
+  ) async {
     final spoken = <String>[];
     await tester.pumpWidget(host(onSpeak: spoken.add, onCall: (_) {}));
 
     final nameRect = tester.getRect(find.text('Marie'));
-    // Repère la largeur réelle disponible pour la ligne du nom via la ligne
-    // libellé + bouton juste en dessous (même largeur de contenu, bornée par
-    // le padding de la carte) plutôt que le rectangle externe de la carte :
-    // ce dernier inclut la marge/le padding de la carte, une marge de
-    // respiration voulue entre cartes, pas la ligne elle-même.
-    final rowRect = tester
-        .getRect(find.ancestor(of: find.text('Mobile'), matching: find.byType(Row)).first);
-    // 10 px avant le bord : nettement au-delà de la largeur du mot « Marie »
-    // (le nom ne remplit jamais toute la ligne), donc bien dans le vide situé
-    // à droite du prénom, tout en restant dans la zone tactile élargie.
+
+    final rowRect = tester.getRect(
+      find.ancestor(of: find.text('Mobile'), matching: find.byType(Row)).first,
+    );
+
     final x = rowRect.right - 10;
     await tester.tapAt(Offset(x, nameRect.center.dy));
 
     expect(spoken, ['Marie']);
   });
 
-  testWidgets('toucher a droite d un libelle prononce quand meme',
-      (tester) async {
+  testWidgets('toucher a droite d un libelle prononce quand meme', (
+    tester,
+  ) async {
     final spoken = <String>[];
     await tester.pumpWidget(host(onSpeak: spoken.add, onCall: (_) {}));
 
     final labelRect = tester.getRect(find.text('Mobile'));
     final buttonRect = tester.getRect(find.byType(CallButton).first);
-    // Entre la fin du libellé et le bouton vert, sans toucher le bouton.
+
     final x = (labelRect.right + buttonRect.left) / 2;
     await tester.tapAt(Offset(x, labelRect.center.dy));
 
@@ -103,20 +105,23 @@ void main() {
     expect(size.height, greaterThanOrEqualTo(72));
   });
 
-  testWidgets('un contact a un seul numero n affiche pas de libelle',
-      (tester) async {
-    await tester.pumpWidget(MaterialApp(
-      theme: buildTheme(AppPalette.light, TextSize.m),
-      home: Scaffold(
-        body: ContactCard(
-          contact: joffrey,
-          palette: AppPalette.light,
-          layout: ContactLayout.compact,
-          onSpeak: (_) {},
-          onCall: (_) {},
+  testWidgets('un contact a un seul numero n affiche pas de libelle', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: buildTheme(AppPalette.light, TextSize.m),
+        home: Scaffold(
+          body: ContactCard(
+            contact: joffrey,
+            palette: AppPalette.light,
+            layout: ContactLayout.compact,
+            onSpeak: (_) {},
+            onCall: (_) {},
+          ),
         ),
       ),
-    ));
+    );
 
     expect(find.text('Joffrey'), findsOneWidget);
     expect(find.text('Mobile'), findsNothing);
@@ -124,186 +129,208 @@ void main() {
   });
 
   group('disposition large', () {
-    testWidgets('le bouton se place sous le nom, sans contraindre sa largeur',
-        (tester) async {
-      await tester.pumpWidget(host(
-        onSpeak: (_) {},
-        onCall: (_) {},
-        layout: ContactLayout.wide,
-      ));
+    testWidgets('le bouton se place sous le nom, sans contraindre sa largeur', (
+      tester,
+    ) async {
+      await tester.pumpWidget(
+        host(onSpeak: (_) {}, onCall: (_) {}, layout: ContactLayout.wide),
+      );
 
       final nameRect = tester.getRect(find.text('Marie'));
       final buttonRect = tester.getRect(find.byType(FullWidthCallButton).first);
       final cardRect = tester.getRect(find.byType(ContactCard));
 
-      // Le bouton est en dessous du nom, jamais à côté.
       expect(buttonRect.top, greaterThanOrEqualTo(nameRect.bottom));
-      // Le bouton s'étire sur toute la largeur utile de la carte : sa
-      // largeur n'est pas rétrécie par une colonne partagée avec le nom.
+
       expect(buttonRect.width, greaterThan(cardRect.width * 0.8));
-      // La largeur disponible pour le nom n'est pas amputée par le bouton :
-      // le mot le plus large que porte le nom tiendrait largement plus que
-      // la largeur d'un rond de 72 px sur cette même ligne.
+
       final nameZone = tester.getRect(
-        find.ancestor(of: find.text('Marie'), matching: find.byType(SizedBox)).first,
+        find
+            .ancestor(of: find.text('Marie'), matching: find.byType(SizedBox))
+            .first,
       );
       expect(nameZone.width, greaterThan(cardRect.width * 0.8));
     });
 
-    testWidgets('un contact a un seul numero n affiche pas de libelle non plus',
-        (tester) async {
-      await tester.pumpWidget(MaterialApp(
-        theme: buildTheme(AppPalette.light, TextSize.m),
-        home: Scaffold(
-          body: ContactCard(
-            contact: joffrey,
-            palette: AppPalette.light,
-            layout: ContactLayout.wide,
-            onSpeak: (_) {},
-            onCall: (_) {},
+    testWidgets(
+      'un contact a un seul numero n affiche pas de libelle non plus',
+      (tester) async {
+        await tester.pumpWidget(
+          MaterialApp(
+            theme: buildTheme(AppPalette.light, TextSize.m),
+            home: Scaffold(
+              body: ContactCard(
+                contact: joffrey,
+                palette: AppPalette.light,
+                layout: ContactLayout.wide,
+                onSpeak: (_) {},
+                onCall: (_) {},
+              ),
+            ),
           ),
-        ),
-      ));
+        );
 
-      expect(find.text('Joffrey'), findsOneWidget);
-      expect(find.text('Mobile'), findsNothing);
-      expect(find.byType(FullWidthCallButton), findsOneWidget);
-    });
+        expect(find.text('Joffrey'), findsOneWidget);
+        expect(find.text('Mobile'), findsNothing);
+        expect(find.byType(FullWidthCallButton), findsOneWidget);
+      },
+    );
 
-    testWidgets('les trois zones tactiles fonctionnent, y compris a cote du libelle',
-        (tester) async {
-      final spoken = <String>[];
-      final called = <ContactNumber>[];
-      await tester.pumpWidget(host(
-        onSpeak: spoken.add,
-        onCall: called.add,
-        layout: ContactLayout.wide,
-      ));
+    testWidgets(
+      'les trois zones tactiles fonctionnent, y compris a cote du libelle',
+      (tester) async {
+        final spoken = <String>[];
+        final called = <ContactNumber>[];
+        await tester.pumpWidget(
+          host(
+            onSpeak: spoken.add,
+            onCall: called.add,
+            layout: ContactLayout.wide,
+          ),
+        );
 
-      await tester.tap(find.text('Marie'));
-      expect(spoken, ['Marie']);
-      spoken.clear();
+        await tester.tap(find.text('Marie'));
+        expect(spoken, ['Marie']);
+        spoken.clear();
 
-      await tester.tap(find.text('Mobile'));
-      expect(spoken, ['Marie Mobile']);
-      spoken.clear();
+        await tester.tap(find.text('Mobile'));
+        expect(spoken, ['Marie Mobile']);
+        spoken.clear();
 
-      // A cote du libelle, dans la zone elargie mais sans toucher le texte.
-      final labelRect = tester.getRect(find.text('Mobile'));
-      final labelZoneRect = tester.getRect(
-        find.ancestor(of: find.text('Mobile'), matching: find.byType(SizedBox)).first,
-      );
-      final x = labelZoneRect.right - 4;
-      await tester.tapAt(Offset(x, labelRect.center.dy));
-      expect(spoken, ['Marie Mobile']);
+        final labelRect = tester.getRect(find.text('Mobile'));
+        final labelZoneRect = tester.getRect(
+          find
+              .ancestor(
+                of: find.text('Mobile'),
+                matching: find.byType(SizedBox),
+              )
+              .first,
+        );
+        final x = labelZoneRect.right - 4;
+        await tester.tapAt(Offset(x, labelRect.center.dy));
+        expect(spoken, ['Marie Mobile']);
 
-      await tester.tap(find.byType(FullWidthCallButton).first);
-      expect(called.single.number, '0611223344');
-    });
+        await tester.tap(find.byType(FullWidthCallButton).first);
+        expect(called.single.number, '0611223344');
+      },
+    );
   });
 
   group('nom en majuscules', () {
-    testWidgets('le nom reste inchange quand le reglage est desactive',
-        (tester) async {
+    testWidgets('le nom reste inchange quand le reglage est desactive', (
+      tester,
+    ) async {
       await tester.pumpWidget(host(onSpeak: (_) {}, onCall: (_) {}));
 
       expect(find.text('Marie'), findsOneWidget);
       expect(find.text('MARIE'), findsNothing);
     });
 
-    testWidgets('le nom passe en capitales quand le reglage est active',
-        (tester) async {
-      await tester.pumpWidget(MaterialApp(
-        theme: buildTheme(AppPalette.light, TextSize.m),
-        home: Scaffold(
-          body: ContactCard(
-            contact: marie,
-            palette: AppPalette.light,
-            layout: ContactLayout.compact,
-            uppercaseNames: true,
-            onSpeak: (_) {},
-            onCall: (_) {},
+    testWidgets('le nom passe en capitales quand le reglage est active', (
+      tester,
+    ) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: buildTheme(AppPalette.light, TextSize.m),
+          home: Scaffold(
+            body: ContactCard(
+              contact: marie,
+              palette: AppPalette.light,
+              layout: ContactLayout.compact,
+              uppercaseNames: true,
+              onSpeak: (_) {},
+              onCall: (_) {},
+            ),
           ),
         ),
-      ));
+      );
 
       expect(find.text('MARIE'), findsOneWidget);
       expect(find.text('Marie'), findsNothing);
     });
 
-    testWidgets('ce qui est prononce garde la casse d origine du contact',
-        (tester) async {
+    testWidgets('ce qui est prononce garde la casse d origine du contact', (
+      tester,
+    ) async {
       final spoken = <String>[];
-      await tester.pumpWidget(MaterialApp(
-        theme: buildTheme(AppPalette.light, TextSize.m),
-        home: Scaffold(
-          body: ContactCard(
-            contact: marie,
-            palette: AppPalette.light,
-            layout: ContactLayout.compact,
-            uppercaseNames: true,
-            onSpeak: spoken.add,
-            onCall: (_) {},
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: buildTheme(AppPalette.light, TextSize.m),
+          home: Scaffold(
+            body: ContactCard(
+              contact: marie,
+              palette: AppPalette.light,
+              layout: ContactLayout.compact,
+              uppercaseNames: true,
+              onSpeak: spoken.add,
+              onCall: (_) {},
+            ),
           ),
         ),
-      ));
+      );
 
       await tester.tap(find.text('MARIE'));
       expect(spoken, ['Marie']);
     });
 
-    testWidgets('le libelle du numero reste inchange quand le reglage est desactive',
-        (tester) async {
-      await tester.pumpWidget(host(onSpeak: (_) {}, onCall: (_) {}));
+    testWidgets(
+      'le libelle du numero reste inchange quand le reglage est desactive',
+      (tester) async {
+        await tester.pumpWidget(host(onSpeak: (_) {}, onCall: (_) {}));
 
-      expect(find.text('Mobile'), findsOneWidget);
-      expect(find.text('MOBILE'), findsNothing);
-    });
-
-    testWidgets('le libelle du numero passe en capitales quand le reglage est active',
-        (tester) async {
-      await tester.pumpWidget(MaterialApp(
-        theme: buildTheme(AppPalette.light, TextSize.m),
-        home: Scaffold(
-          body: ContactCard(
-            contact: marie,
-            palette: AppPalette.light,
-            layout: ContactLayout.compact,
-            uppercaseNames: true,
-            onSpeak: (_) {},
-            onCall: (_) {},
-          ),
-        ),
-      ));
-
-      expect(find.text('MOBILE'), findsOneWidget);
-      expect(find.text('Mobile'), findsNothing);
-    });
+        expect(find.text('Mobile'), findsOneWidget);
+        expect(find.text('MOBILE'), findsNothing);
+      },
+    );
 
     testWidgets(
-        'ce qui est prononce pour un libelle garde sa casse d origine, meme majuscules affichees',
-        (tester) async {
-      final spoken = <String>[];
-      await tester.pumpWidget(MaterialApp(
-        theme: buildTheme(AppPalette.light, TextSize.m),
-        home: Scaffold(
-          body: ContactCard(
-            contact: marie,
-            palette: AppPalette.light,
-            layout: ContactLayout.compact,
-            uppercaseNames: true,
-            onSpeak: spoken.add,
-            onCall: (_) {},
+      'le libelle du numero passe en capitales quand le reglage est active',
+      (tester) async {
+        await tester.pumpWidget(
+          MaterialApp(
+            theme: buildTheme(AppPalette.light, TextSize.m),
+            home: Scaffold(
+              body: ContactCard(
+                contact: marie,
+                palette: AppPalette.light,
+                layout: ContactLayout.compact,
+                uppercaseNames: true,
+                onSpeak: (_) {},
+                onCall: (_) {},
+              ),
+            ),
           ),
-        ),
-      ));
+        );
 
-      // Le libelle affiche est en capitales ; ce qui est prononce doit rester
-      // en casse normale (« Marie Mobile », jamais « M, O, B, I, L, E »
-      // lettre par lettre chez certains moteurs de synthese vocale).
-      await tester.tap(find.text('MOBILE'));
-      expect(spoken, ['Marie Mobile']);
-    });
+        expect(find.text('MOBILE'), findsOneWidget);
+        expect(find.text('Mobile'), findsNothing);
+      },
+    );
+
+    testWidgets(
+      'ce qui est prononce pour un libelle garde sa casse d origine, meme majuscules affichees',
+      (tester) async {
+        final spoken = <String>[];
+        await tester.pumpWidget(
+          MaterialApp(
+            theme: buildTheme(AppPalette.light, TextSize.m),
+            home: Scaffold(
+              body: ContactCard(
+                contact: marie,
+                palette: AppPalette.light,
+                layout: ContactLayout.compact,
+                uppercaseNames: true,
+                onSpeak: spoken.add,
+                onCall: (_) {},
+              ),
+            ),
+          ),
+        );
+
+        await tester.tap(find.text('MOBILE'));
+        expect(spoken, ['Marie Mobile']);
+      },
+    );
   });
 
   group('mise en avant des numeros d urgence', () {
@@ -336,30 +363,34 @@ void main() {
       );
     }
 
-    testWidgets('un simple appui sur le bouton rouge appelle le numero d urgence',
-        (tester) async {
-      final called = <ContactNumber>[];
-      await tester.pumpWidget(
-        urgenceHost(onSpeak: (_) {}, onCall: called.add),
-      );
+    testWidgets(
+      'un simple appui sur le bouton rouge appelle le numero d urgence',
+      (tester) async {
+        final called = <ContactNumber>[];
+        await tester.pumpWidget(
+          urgenceHost(onSpeak: (_) {}, onCall: called.add),
+        );
 
-      final redButton = find.byType(CallButton).last;
-      await tester.tap(redButton);
+        final redButton = find.byType(CallButton).last;
+        await tester.tap(redButton);
 
-      expect(called.single.number, '15');
-    });
+        expect(called.single.number, '15');
+      },
+    );
 
-    testWidgets('le bouton vert du numero ordinaire appelle toujours sur un simple appui',
-        (tester) async {
-      final called = <ContactNumber>[];
-      await tester.pumpWidget(
-        urgenceHost(onSpeak: (_) {}, onCall: called.add),
-      );
+    testWidgets(
+      'le bouton vert du numero ordinaire appelle toujours sur un simple appui',
+      (tester) async {
+        final called = <ContactNumber>[];
+        await tester.pumpWidget(
+          urgenceHost(onSpeak: (_) {}, onCall: called.add),
+        );
 
-      final greenButton = find.byType(CallButton).first;
-      await tester.tap(greenButton);
+        final greenButton = find.byType(CallButton).first;
+        await tester.tap(greenButton);
 
-      expect(called.single.number, '0144556677');
-    });
+        expect(called.single.number, '0144556677');
+      },
+    );
   });
 }

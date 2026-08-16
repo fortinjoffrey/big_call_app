@@ -19,19 +19,11 @@ class PaletteColors {
   final Color onBackground;
   final Color border;
 
-  /// Vert assombri : un combiné blanc sur le vert Material vif (#00C853)
-  /// ne donne que 2:1 et se délave dans le rond.
   final Color button;
   final Color onButton;
   final Color header;
   final Color onHeader;
 
-  /// Rouge du bouton d'appel de la carte SAMU — carte de contact ordinaire
-  /// dont seul le bouton diffère par sa couleur. Deux contraintes, comme
-  /// pour le bouton vert : l'icône blanche dessus >= 4,5:1, et le bouton
-  /// contre le fond de sa carte (`background`) >= 3:1 (cible tactile).
-  /// Mesuré : icône blanche sur rouge = 4,98:1 (les trois palettes) ; bouton
-  /// sur fond = 4,98:1 (clair) / 4,22:1 (sombre et jaune, fond noir).
   final Color emergency;
   final Color onEmergency;
 }

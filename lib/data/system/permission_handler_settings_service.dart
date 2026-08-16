@@ -10,8 +10,6 @@ class PermissionHandlerSettingsService implements SystemSettingsService {
     try {
       await ph.openAppSettings();
     } on Object catch (error) {
-      // Rien à proposer de mieux à l'utilisatrice si l'écran système refuse
-      // de s'ouvrir : on journalise pour rester diagnosticable.
       debugPrint('openAppSettings: $error');
     }
   }

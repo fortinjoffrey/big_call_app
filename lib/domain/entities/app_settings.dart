@@ -6,45 +6,45 @@ enum AppPalette { light, dark, yellow }
 
 extension AppPaletteLabel on AppPalette {
   String get label => switch (this) {
-        AppPalette.light => 'Clair',
-        AppPalette.dark => 'Sombre',
-        AppPalette.yellow => 'Jaune sur noir',
-      };
+    AppPalette.light => 'Clair',
+    AppPalette.dark => 'Sombre',
+    AppPalette.yellow => 'Jaune sur noir',
+  };
 }
 
 enum ContactLayout { compact, wide }
 
 extension ContactLayoutLabel on ContactLayout {
   String get label => switch (this) {
-        ContactLayout.compact => 'Bouton à droite',
-        ContactLayout.wide => 'Bouton en dessous',
-      };
+    ContactLayout.compact => 'Bouton à droite',
+    ContactLayout.wide => 'Bouton en dessous',
+  };
 }
 
 enum TextSize { m, l, xl }
 
 extension TextSizeScale on TextSize {
   double get multiplier => switch (this) {
-        TextSize.m => 1.0,
-        TextSize.l => 1.25,
-        TextSize.xl => 1.5,
-      };
+    TextSize.m => 1.0,
+    TextSize.l => 1.25,
+    TextSize.xl => 1.5,
+  };
 
   String get label => switch (this) {
-        TextSize.m => 'Petit',
-        TextSize.l => 'Moyen',
-        TextSize.xl => 'Grand',
-      };
+    TextSize.m => 'Petit',
+    TextSize.l => 'Moyen',
+    TextSize.xl => 'Grand',
+  };
 }
 
 enum EmergencyStyle { section, highlight, none }
 
 extension EmergencyStyleLabel on EmergencyStyle {
   String get label => switch (this) {
-        EmergencyStyle.section => 'Dans une section à part',
-        EmergencyStyle.highlight => 'Bouton rouge, à leur place',
-        EmergencyStyle.none => 'Comme les autres contacts',
-      };
+    EmergencyStyle.section => 'Dans une section à part',
+    EmergencyStyle.highlight => 'Bouton rouge, à leur place',
+    EmergencyStyle.none => 'Comme les autres contacts',
+  };
 }
 
 @freezed

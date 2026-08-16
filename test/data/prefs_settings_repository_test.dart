@@ -29,15 +29,19 @@ void main() {
     expect(await repo.load(), settings);
   });
 
-  test('les noms en majuscules retombent sur le defaut quand la cle est absente',
-      () async {
-    SharedPreferences.setMockInitialValues({});
-    final repo = PrefsSettingsRepository(await SharedPreferences.getInstance());
+  test(
+    'les noms en majuscules retombent sur le defaut quand la cle est absente',
+    () async {
+      SharedPreferences.setMockInitialValues({});
+      final repo = PrefsSettingsRepository(
+        await SharedPreferences.getInstance(),
+      );
 
-    final settings = await repo.load();
+      final settings = await repo.load();
 
-    expect(settings.uppercaseNames, kDefaultSettings.uppercaseNames);
-  });
+      expect(settings.uppercaseNames, kDefaultSettings.uppercaseNames);
+    },
+  );
 
   test('retombe sur les defauts si la valeur stockee est inconnue', () async {
     SharedPreferences.setMockInitialValues({
@@ -57,23 +61,26 @@ void main() {
 
     final settings = await repo.load();
 
-    // Le repli est par champ, pas global : la palette enregistrée est
-    // conservée, seule la taille manquante retombe sur le défaut.
     expect(settings.palette, AppPalette.yellow);
     expect(settings.textSize, kDefaultSettings.textSize);
     expect(settings.layout, kDefaultSettings.layout);
   });
 
-  test('la disposition survit a un theme et un palier voisins invalides', () async {
-    SharedPreferences.setMockInitialValues({'layout': 'wide'});
-    final repo = PrefsSettingsRepository(await SharedPreferences.getInstance());
+  test(
+    'la disposition survit a un theme et un palier voisins invalides',
+    () async {
+      SharedPreferences.setMockInitialValues({'layout': 'wide'});
+      final repo = PrefsSettingsRepository(
+        await SharedPreferences.getInstance(),
+      );
 
-    final settings = await repo.load();
+      final settings = await repo.load();
 
-    expect(settings.layout, ContactLayout.wide);
-    expect(settings.palette, kDefaultSettings.palette);
-    expect(settings.textSize, kDefaultSettings.textSize);
-  });
+      expect(settings.layout, ContactLayout.wide);
+      expect(settings.palette, kDefaultSettings.palette);
+      expect(settings.textSize, kDefaultSettings.textSize);
+    },
+  );
 
   test('le style d urgence survit a des champs voisins invalides', () async {
     SharedPreferences.setMockInitialValues({

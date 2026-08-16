@@ -25,7 +25,6 @@ const docteur = PhoneContact(
   numbers: [ContactNumber(number: '0144556677', label: 'Bureau')],
 );
 
-/// Nom long : sert à faire apparaître les débordements au palier XL.
 const anneMarie = PhoneContact(
   id: '4',
   displayName: 'Anne-Marie Delacroix',
@@ -33,7 +32,6 @@ const anneMarie = PhoneContact(
   numbers: [ContactNumber(number: '0633445566', label: 'Mobile')],
 );
 
-/// Contact porteur d'un numéro d'urgence (15, SAMU).
 const samu = PhoneContact(
   id: '5',
   displayName: 'SAMU',

@@ -40,8 +40,9 @@ void main() {
     systemSettings = _MockSystemSettingsService();
 
     when(() => repository.supportsFavorites).thenReturn(true);
-    when(() => repository.loadContacts())
-        .thenAnswer((_) async => const Ok(allContacts));
+    when(
+      () => repository.loadContacts(),
+    ).thenAnswer((_) async => const Ok(allContacts));
     when(() => callService.call(any())).thenAnswer((_) async => const Ok(null));
     when(() => speech.speak(any())).thenAnswer((_) async {});
     when(() => speech.stop()).thenAnswer((_) async {});
@@ -55,10 +56,16 @@ void main() {
     expect: () => [
       const ContactsLoading(),
       isA<ContactsReady>()
-          .having((s) => s.favorites.map((c) => c.displayName).toList(),
-              'favoris tries', ['Joffrey', 'Marie'])
-          .having((s) => s.others.map((c) => c.displayName).toList(),
-              'autres tries', ['Anne-Marie Delacroix', 'Docteur Martin'])
+          .having(
+            (s) => s.favorites.map((c) => c.displayName).toList(),
+            'favoris tries',
+            ['Joffrey', 'Marie'],
+          )
+          .having(
+            (s) => s.others.map((c) => c.displayName).toList(),
+            'autres tries',
+            ['Anne-Marie Delacroix', 'Docteur Martin'],
+          )
           .having((s) => s.showFavoritesSection, 'section favoris', true),
     ],
   );
@@ -82,18 +89,15 @@ void main() {
   blocTest<ContactsBloc, ContactsState>(
     'expose un etat dedie quand la permission est refusee',
     build: () {
-      when(() => repository.loadContacts())
-          .thenAnswer((_) async => const Err(Failure.permissionDenied()));
+      when(
+        () => repository.loadContacts(),
+      ).thenAnswer((_) async => const Err(Failure.permissionDenied()));
       return build();
     },
     act: (bloc) => bloc.add(const ContactsRequested()),
     expect: () => [const ContactsLoading(), const ContactsPermissionDenied()],
   );
 
-  // Ce test prouve l'ORDRE stop→speak, qui est le mécanisme réel de
-  // l'interruption. Il ne teste pas `restartable()` : avec un `speak` simulé
-  // qui rend la main immédiatement, les deux gestionnaires ne se chevauchent
-  // jamais, et retirer le transformer laisse ce test au vert.
   blocTest<ContactsBloc, ContactsState>(
     'chaque parole commence par couper la precedente (stop avant speak)',
     build: build,
@@ -123,8 +127,9 @@ void main() {
   blocTest<ContactsBloc, ContactsState>(
     'un echec d appel remonte dans callError puis se dissipe',
     build: () {
-      when(() => callService.call(any()))
-          .thenAnswer((_) async => const Err(Failure.unavailable()));
+      when(
+        () => callService.call(any()),
+      ).thenAnswer((_) async => const Err(Failure.unavailable()));
       return build();
     },
     act: (bloc) async {
@@ -136,8 +141,11 @@ void main() {
     },
     skip: 2,
     expect: () => [
-      isA<ContactsReady>()
-          .having((s) => s.callError, 'erreur', const Failure.unavailable()),
+      isA<ContactsReady>().having(
+        (s) => s.callError,
+        'erreur',
+        const Failure.unavailable(),
+      ),
       isA<ContactsReady>().having((s) => s.callError, 'erreur effacee', isNull),
     ],
   );
@@ -173,18 +181,19 @@ void main() {
         isFavorite: false,
         numbers: [ContactNumber(number: '0600000003', label: 'Mobile')],
       );
-      when(() => repository.loadContacts())
-          .thenAnswer((_) async => const Ok([zoe, emile, emma]));
+      when(
+        () => repository.loadContacts(),
+      ).thenAnswer((_) async => const Ok([zoe, emile, emma]));
       return build();
     },
     act: (bloc) => bloc.add(const ContactsRequested()),
     skip: 1,
     expect: () => [
-      // Sans normalisation, « Émile » finirait après « Zoé ».
       isA<ContactsReady>().having(
-          (s) => s.others.map((c) => c.displayName).toList(),
-          'ordre alphabetique francais',
-          ['Émile', 'Emma', 'Zoé']),
+        (s) => s.others.map((c) => c.displayName).toList(),
+        'ordre alphabetique francais',
+        ['Émile', 'Emma', 'Zoé'],
+      ),
     ],
   );
 }

@@ -26,18 +26,19 @@ void main() {
   });
 
   test(
-      'un contact avec un numero d urgence parmi d autres numeros est repere',
-      () {
-    const contact = PhoneContact(
-      id: '3',
-      displayName: 'Marie',
-      isFavorite: true,
-      numbers: [
-        ContactNumber(number: '0611223344', label: 'Mobile'),
-        ContactNumber(number: '15', label: 'Fixe'),
-      ],
-    );
+    'un contact avec un numero d urgence parmi d autres numeros est repere',
+    () {
+      const contact = PhoneContact(
+        id: '3',
+        displayName: 'Marie',
+        isFavorite: true,
+        numbers: [
+          ContactNumber(number: '0611223344', label: 'Mobile'),
+          ContactNumber(number: '15', label: 'Fixe'),
+        ],
+      );
 
-    expect(contact.hasEmergencyNumber, isTrue);
-  });
+      expect(contact.hasEmergencyNumber, isTrue);
+    },
+  );
 }

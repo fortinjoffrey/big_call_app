@@ -36,25 +36,26 @@ class ContactsPage extends StatelessWidget {
               current is ContactsReady && current.callError != null,
           listener: (context, state) => _showCallError(context),
           builder: (context, state) => switch (state) {
-            ContactsLoading() => const Center(child: CircularProgressIndicator()),
+            ContactsLoading() => const Center(
+              child: CircularProgressIndicator(),
+            ),
             ContactsPermissionDenied() => MessageScreen(
-                palette: palette,
-                message:
-                    "L'application a besoin de l'accès à vos contacts pour "
-                    'les afficher.',
-                actionLabel: 'AUTORISER',
-                onAction: () => context
-                    .read<ContactsBloc>()
-                    .add(const SystemSettingsRequested()),
+              palette: palette,
+              message:
+                  "L'application a besoin de l'accès à vos contacts pour "
+                  'les afficher.',
+              actionLabel: 'AUTORISER',
+              onAction: () => context.read<ContactsBloc>().add(
+                const SystemSettingsRequested(),
               ),
+            ),
             ContactsError() => MessageScreen(
-                palette: palette,
-                message: "Les contacts n'ont pas pu être chargés.",
-                actionLabel: 'RÉESSAYER',
-                onAction: () => context
-                    .read<ContactsBloc>()
-                    .add(const ContactsRequested()),
-              ),
+              palette: palette,
+              message: "Les contacts n'ont pas pu être chargés.",
+              actionLabel: 'RÉESSAYER',
+              onAction: () =>
+                  context.read<ContactsBloc>().add(const ContactsRequested()),
+            ),
             ContactsReady(:final favorites, :final others) =>
               favorites.isEmpty && others.isEmpty
                   ? MessageScreen(
@@ -71,38 +72,27 @@ class ContactsPage extends StatelessWidget {
   Widget _buildList(BuildContext context, ContactsReady state) {
     final bloc = context.read<ContactsBloc>();
 
-    // Dans les styles « section » et « bouton rouge », le bouton d'un numéro
-    // d'urgence est rouge — un simple repère visuel, l'appui simple appelle
-    // comme n'importe quel autre bouton. Dans « comme les autres contacts »,
-    // il reste vert, même sur un numéro d'urgence.
     final highlight = emergencyStyle != EmergencyStyle.none;
 
     Widget card(PhoneContact contact) => ContactCard(
-          contact: contact,
-          palette: palette,
-          layout: layout,
-          highlightEmergencyNumbers: highlight,
-          uppercaseNames: uppercaseNames,
-          onSpeak: (text) => bloc.add(LabelSpoken(text)),
-          onCall: (number) => bloc.add(CallRequested(number.number)),
-        );
+      contact: contact,
+      palette: palette,
+      layout: layout,
+      highlightEmergencyNumbers: highlight,
+      uppercaseNames: uppercaseNames,
+      onSpeak: (text) => bloc.add(LabelSpoken(text)),
+      onCall: (number) => bloc.add(CallRequested(number.number)),
+    );
 
-    // Style « section » : les contacts porteurs d'un numéro d'urgence
-    // quittent leur groupe d'origine (favoris ou tous) pour former une
-    // section à part, placée entre les favoris et « TOUS LES CONTACTS ».
-    // Dans les deux autres styles, personne ne bouge.
     final useSection = emergencyStyle == EmergencyStyle.section;
-    final favorites = useSection ? withoutEmergency(state.favorites) : state.favorites;
+    final favorites = useSection
+        ? withoutEmergency(state.favorites)
+        : state.favorites;
     final others = useSection ? withoutEmergency(state.others) : state.others;
     final emergency = useSection
         ? [...emergencyAmong(state.favorites), ...emergencyAmong(state.others)]
         : const <PhoneContact>[];
 
-    // Chaque section n'apparaît pas forcément à l'écran (favoris masqués sur
-    // iOS, urgence absente hors du style « section ») : l'ordre réel n'est
-    // donc connu qu'une fois ce filtrage fait. On construit chaque section
-    // sous forme de liste de widgets, puis on insère l'espacement entre les
-    // sections effectivement présentes plutôt que de le coder en dur.
     final sections = <List<Widget>>[
       if (state.showFavoritesSection)
         [
@@ -128,8 +118,7 @@ class ContactsPage extends StatelessWidget {
         SectionHeader(
           title: 'Autres contacts',
           palette: palette,
-          // Sur iOS la section « Favoris » est masquée : l'appui long doit
-          // rester atteignable, il passe donc sur cet en-tête.
+
           onLongPress: state.showFavoritesSection
               ? null
               : () => _openSettings(context),
@@ -152,12 +141,11 @@ class ContactsPage extends StatelessWidget {
   }
 
   void _openSettings(BuildContext context) {
-    Navigator.of(context).push(
-      MaterialPageRoute<void>(builder: (_) => const SettingsPage()),
-    );
+    Navigator.of(
+      context,
+    ).push(MaterialPageRoute<void>(builder: (_) => const SettingsPage()));
   }
 
-  /// Pas de SnackBar : petit, peu contrasté, disparu en trois secondes.
   Future<void> _showCallError(BuildContext context) async {
     final bloc = context.read<ContactsBloc>();
     final state = bloc.state;

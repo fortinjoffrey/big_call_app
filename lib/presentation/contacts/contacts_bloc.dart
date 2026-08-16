@@ -19,17 +19,13 @@ class ContactsBloc extends Bloc<ContactsEvent, ContactsState> {
     this._systemSettings,
   ) : super(const ContactsLoading()) {
     on<ContactsRequested>(_onRequested);
-    // C'est le `stop()` en tête de `_onSpoken` qui coupe la parole en cours —
-    // pas ce transformer. `restartable()` annule la suite d'un gestionnaire
-    // interrompu, or `speak()` est sa dernière instruction : il n'y a rien à
-    // annuler après. On le garde parce qu'il évite l'empilement de
-    // gestionnaires si `speak` devient lent, mais ne pas supprimer le `stop()`
-    // en croyant qu'il fait doublon.
+
     on<LabelSpoken>(_onSpoken, transformer: restartable());
     on<CallRequested>(_onCall);
     on<CallErrorDismissed>(_onErrorDismissed);
     on<SystemSettingsRequested>(
-        (event, emit) => _systemSettings.openAppSettings());
+      (event, emit) => _systemSettings.openAppSettings(),
+    );
   }
 
   final ContactRepository _repository;
@@ -59,11 +55,13 @@ class ContactsBloc extends Bloc<ContactsEvent, ContactsState> {
             ? value.where((c) => !c.isFavorite).toList()
             : List<PhoneContact>.from(value);
 
-        emit(ContactsReady(
-          favorites: _sorted(favorites),
-          others: _sorted(others),
-          showFavoritesSection: supportsFavorites,
-        ));
+        emit(
+          ContactsReady(
+            favorites: _sorted(favorites),
+            others: _sorted(others),
+            showFavoritesSection: supportsFavorites,
+          ),
+        );
     }
   }
 
@@ -77,11 +75,7 @@ class ContactsBloc extends Bloc<ContactsEvent, ContactsState> {
 
   Future<void> _call(String number, Emitter<ContactsState> emit) async {
     final result = await _callService.call(number);
-    // L'erreur n'est remontée que si la liste est encore à l'écran. Un
-    // rechargement concurrent la ferait disparaître — impossible aujourd'hui,
-    // `ContactsRequested` n'étant émis qu'au démarrage. Si un jour l'app
-    // recharge au retour de premier plan, il faudra décider où loger une
-    // erreur d'appel qui survit à un rechargement, plutôt que de la perdre.
+
     final current = state;
     if (result is Err<void> && current is ContactsReady) {
       emit(current.copyWith(callError: result.failure));
@@ -97,10 +91,6 @@ class ContactsBloc extends Bloc<ContactsEvent, ContactsState> {
   }
 
   List<PhoneContact> _sorted(List<PhoneContact> contacts) {
-    // Comparer sans accents : `'é'` vaut 233 en UTF-16, au-dessus de toutes
-    // les lettres non accentuées, si bien qu'un tri brut renvoie « Émile »
-    // après « Zoé » — tout en bas d'un répertoire français. Le nom affiché
-    // n'est pas modifié, seule la clé de tri l'est.
     String key(PhoneContact c) => removeDiacritics(c.displayName).toLowerCase();
 
     final copy = List<PhoneContact>.from(contacts)

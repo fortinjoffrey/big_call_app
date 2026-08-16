@@ -16,9 +16,21 @@ class PrefsSettingsRepository implements SettingsRepository {
   @override
   Future<AppSettings> load() async {
     return AppSettings(
-      palette: _readEnum(_paletteKey, AppPalette.values, kDefaultSettings.palette),
-      textSize: _readEnum(_textSizeKey, TextSize.values, kDefaultSettings.textSize),
-      layout: _readEnum(_layoutKey, ContactLayout.values, kDefaultSettings.layout),
+      palette: _readEnum(
+        _paletteKey,
+        AppPalette.values,
+        kDefaultSettings.palette,
+      ),
+      textSize: _readEnum(
+        _textSizeKey,
+        TextSize.values,
+        kDefaultSettings.textSize,
+      ),
+      layout: _readEnum(
+        _layoutKey,
+        ContactLayout.values,
+        kDefaultSettings.layout,
+      ),
       emergencyStyle: _readEnum(
         _emergencyStyleKey,
         EmergencyStyle.values,
@@ -29,12 +41,6 @@ class PrefsSettingsRepository implements SettingsRepository {
     );
   }
 
-  /// Ne rend pas compte d'un échec, délibérément. `setString` renvoie un
-  /// booléen que l'on ignore : une écriture qui échoue (mémoire pleine, ROM
-  /// constructeur capricieuse) laisse simplement le réglage non enregistré, et
-  /// `load()` retombe alors sur les valeurs par défaut au lieu de planter.
-  /// Remonter l'erreur obligerait l'écran de réglages à afficher quelque chose
-  /// dont l'utilisatrice ne pourrait rien faire.
   @override
   Future<void> save(AppSettings settings) async {
     await _prefs.setString(_paletteKey, settings.palette.name);
@@ -44,8 +50,6 @@ class PrefsSettingsRepository implements SettingsRepository {
     await _prefs.setBool(_uppercaseNamesKey, settings.uppercaseNames);
   }
 
-  /// Une valeur inconnue (renommage d'énumération, fichier corrompu) retombe
-  /// sur le défaut plutôt que de faire planter le démarrage.
   T _readEnum<T extends Enum>(String key, List<T> values, T fallback) {
     final stored = _prefs.getString(key);
     if (stored == null) return fallback;

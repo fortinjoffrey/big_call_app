@@ -9,8 +9,6 @@ import 'package:big_call_app/presentation/settings/settings_event.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-// Contact à un seul numéro : les aperçus restent compacts, sans libellé de
-// numéro qui n'apporterait rien ici.
 const _previewContact = PhoneContact(
   id: 'preview',
   displayName: 'Marie',
@@ -18,8 +16,6 @@ const _previewContact = PhoneContact(
   numbers: [ContactNumber(number: '0611223344', label: 'Mobile')],
 );
 
-// Numéro d'urgence (15) : seul moyen de montrer le bouton rouge et l'effet
-// des trois styles dans la section « Numéros d'urgence ».
 const _previewEmergencyContact = PhoneContact(
   id: 'preview-emergency',
   displayName: 'SAMU',
@@ -64,9 +60,9 @@ class SettingsPage extends StatelessWidget {
                       label: palette.label,
                       selected: palette == settings.palette,
                       palette: settings.palette,
-                      onTap: () => context
-                          .read<SettingsBloc>()
-                          .add(ThemeSelected(palette)),
+                      onTap: () => context.read<SettingsBloc>().add(
+                        ThemeSelected(palette),
+                      ),
                     ),
                 ],
               ),
@@ -79,9 +75,9 @@ class SettingsPage extends StatelessWidget {
                       label: size.label,
                       selected: size == settings.textSize,
                       palette: settings.palette,
-                      onTap: () => context
-                          .read<SettingsBloc>()
-                          .add(TextSizeSelected(size)),
+                      onTap: () => context.read<SettingsBloc>().add(
+                        TextSizeSelected(size),
+                      ),
                     ),
                 ],
               ),
@@ -93,17 +89,17 @@ class SettingsPage extends StatelessWidget {
                     label: 'MAJUSCULES',
                     selected: settings.uppercaseNames,
                     palette: settings.palette,
-                    onTap: () => context
-                        .read<SettingsBloc>()
-                        .add(const UppercaseNamesSelected(true)),
+                    onTap: () => context.read<SettingsBloc>().add(
+                      const UppercaseNamesSelected(true),
+                    ),
                   ),
                   _ChoiceTile(
                     label: 'Normal',
                     selected: !settings.uppercaseNames,
                     palette: settings.palette,
-                    onTap: () => context
-                        .read<SettingsBloc>()
-                        .add(const UppercaseNamesSelected(false)),
+                    onTap: () => context.read<SettingsBloc>().add(
+                      const UppercaseNamesSelected(false),
+                    ),
                   ),
                 ],
               ),
@@ -116,9 +112,9 @@ class SettingsPage extends StatelessWidget {
                       label: layout.label,
                       selected: layout == settings.layout,
                       palette: settings.palette,
-                      onTap: () => context
-                          .read<SettingsBloc>()
-                          .add(LayoutSelected(layout)),
+                      onTap: () => context.read<SettingsBloc>().add(
+                        LayoutSelected(layout),
+                      ),
                     ),
                 ],
               ),
@@ -132,9 +128,9 @@ class SettingsPage extends StatelessWidget {
                       label: style.label,
                       selected: style == settings.emergencyStyle,
                       palette: settings.palette,
-                      onTap: () => context
-                          .read<SettingsBloc>()
-                          .add(EmergencyStyleSelected(style)),
+                      onTap: () => context.read<SettingsBloc>().add(
+                        EmergencyStyleSelected(style),
+                      ),
                     ),
                 ],
               ),
@@ -144,17 +140,8 @@ class SettingsPage extends StatelessWidget {
       ),
     );
   }
-
 }
 
-/// Aperçu unique en haut de page : un contact ordinaire (bouton vert) et un
-/// numéro d'urgence (bouton rouge selon le style choisi), pour remplacer les
-/// cinq aperçus quasi identiques d'avant — quatre d'entre eux ne montraient
-/// jamais que le bouton vert.
-///
-/// Empilées plutôt que côte à côte : au palier XL, deux colonnes ne
-/// laissent plus assez de largeur pour « Marie » ou « SAMU », qui se
-/// retrouvent alors coupés lettre par lettre.
 class _Preview extends StatelessWidget {
   const _Preview({required this.settings});
 
@@ -172,11 +159,6 @@ class _Preview extends StatelessWidget {
     );
   }
 
-  // L'aperçu utilise le vrai widget : ce qu'on voit ici est exactement ce
-  // que la liste affichera. `IgnorePointer` : sans lui, le bouton vert de
-  // l'aperçu réagit au toucher (ondulation de l'InkWell) sans rien
-  // déclencher. Un retour visuel suivi de rien se lit comme une panne, pas
-  // comme un aperçu. Mieux vaut qu'il ne réagisse pas du tout.
   Widget _previewCard(AppSettings settings, {required bool emergency}) {
     return IgnorePointer(
       child: ContactCard(
@@ -184,9 +166,7 @@ class _Preview extends StatelessWidget {
         palette: settings.palette,
         layout: settings.layout,
         uppercaseNames: settings.uppercaseNames,
-        // Même règle que sur l'écran des contacts : seul le style « comme
-        // les autres contacts » laisse le bouton vert sur un numéro
-        // d'urgence.
+
         highlightEmergencyNumbers:
             emergency && settings.emergencyStyle != EmergencyStyle.none,
         onSpeak: (_) {},
@@ -196,9 +176,6 @@ class _Preview extends StatelessWidget {
   }
 }
 
-/// Un bloc par réglage : titre repris de la liste des contacts, bordure
-/// franche (jamais d'ombre), puis contrôles. Sépare visuellement les cinq
-/// sections les unes des autres.
 class _Section extends StatelessWidget {
   const _Section({
     required this.title,
@@ -260,8 +237,6 @@ class _ChoiceTile extends StatelessWidget {
     final colors = paletteColors[palette]!;
     final theme = Theme.of(context);
 
-    // La sélection se signale par l'épaisseur de la bordure et une coche,
-    // jamais par une nuance de couleur seule.
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 6),
       child: InkWell(

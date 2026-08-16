@@ -4,8 +4,9 @@ import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   group('FailureScreen', () {
-    testWidgets('affiche le message fourni, lisible sans thème',
-        (tester) async {
+    testWidgets('affiche le message fourni, lisible sans thème', (
+      tester,
+    ) async {
       await tester.pumpWidget(const FailureScreen('Un problème est survenu.'));
 
       expect(find.text('Un problème est survenu.'), findsOneWidget);
@@ -15,10 +16,9 @@ void main() {
       expect(text.style?.color, Colors.black);
     });
 
-    testWidgets('fonctionne sans MaterialApp ni Directionality ambiante',
-        (tester) async {
-      // Reproduit les conditions d'un échec au démarrage : rien
-      // d'initialisé, aucun thème, aucune localisation.
+    testWidgets('fonctionne sans MaterialApp ni Directionality ambiante', (
+      tester,
+    ) async {
       await tester.pumpWidget(const FailureScreen('Message minimal'));
 
       expect(tester.takeException(), isNull);
@@ -27,8 +27,9 @@ void main() {
   });
 
   group('FailureApp', () {
-    testWidgets('monte sans MaterialApp et affiche le message de secours',
-        (tester) async {
+    testWidgets('monte sans MaterialApp et affiche le message de secours', (
+      tester,
+    ) async {
       await tester.pumpWidget(const FailureApp());
 
       expect(tester.takeException(), isNull);

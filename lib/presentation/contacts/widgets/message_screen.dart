@@ -2,8 +2,6 @@ import 'package:big_call_app/core/theme/app_palettes.dart';
 import 'package:big_call_app/domain/entities/app_settings.dart';
 import 'package:flutter/material.dart';
 
-/// Jamais d'écran vide sans explication : chaque impasse affiche un texte
-/// en gros caractères et, quand c'est utile, une seule action.
 class MessageScreen extends StatelessWidget {
   const MessageScreen({
     required this.message,
@@ -46,11 +44,14 @@ class MessageScreen extends StatelessWidget {
                   onTap: onAction,
                   child: Padding(
                     padding: const EdgeInsets.symmetric(
-                        horizontal: 28, vertical: 22),
+                      horizontal: 28,
+                      vertical: 22,
+                    ),
                     child: Text(
                       actionLabel!,
-                      style: theme.textTheme.titleLarge
-                          ?.copyWith(color: colors.onButton),
+                      style: theme.textTheme.titleLarge?.copyWith(
+                        color: colors.onButton,
+                      ),
                     ),
                   ),
                 ),

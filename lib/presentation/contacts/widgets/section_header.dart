@@ -16,17 +16,10 @@ class SectionHeader extends StatelessWidget {
   final String title;
   final AppPalette palette;
 
-  /// Décoration à côté du libellé — ne suit pas le palier M/L/XL, ce n'est
-  /// pas une cible de lecture.
   final IconData? icon;
 
-  /// Couleur de l'icône. Par défaut `colors.onHeader` ; la section URGENCE
-  /// la remplace par `colors.emergency` pour que son pictogramme se
-  /// détache du bandeau au même titre qu'un bouton d'appel rouge.
   final Color? iconColor;
 
-  /// Appui long : seul accès aux réglages. Un geste qu'on ne fait jamais
-  /// par accident, donc pas d'atterrissage involontaire dans les réglages.
   final VoidCallback? onLongPress;
 
   @override
@@ -43,7 +36,11 @@ class SectionHeader extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             if (icon != null) ...[
-              Icon(icon, size: kHeaderBaseSize * 1.4, color: iconColor ?? colors.onHeader),
+              Icon(
+                icon,
+                size: kHeaderBaseSize * 1.4,
+                color: iconColor ?? colors.onHeader,
+              ),
               const SizedBox(width: 8),
             ],
             Flexible(

@@ -22,13 +22,13 @@ void main() {
     'change la palette et la persiste',
     build: () => SettingsBloc(repository, kDefaultSettings),
     act: (bloc) => bloc.add(const ThemeSelected(AppPalette.yellow)),
-    expect: () => [
-      kDefaultSettings.copyWith(palette: AppPalette.yellow),
-    ],
+    expect: () => [kDefaultSettings.copyWith(palette: AppPalette.yellow)],
     verify: (_) {
-      verify(() => repository.save(
-            kDefaultSettings.copyWith(palette: AppPalette.yellow),
-          )).called(1);
+      verify(
+        () => repository.save(
+          kDefaultSettings.copyWith(palette: AppPalette.yellow),
+        ),
+      ).called(1);
     },
   );
 
@@ -36,13 +36,11 @@ void main() {
     'change le palier et le persiste',
     build: () => SettingsBloc(repository, kDefaultSettings),
     act: (bloc) => bloc.add(const TextSizeSelected(TextSize.xl)),
-    expect: () => [
-      kDefaultSettings.copyWith(textSize: TextSize.xl),
-    ],
+    expect: () => [kDefaultSettings.copyWith(textSize: TextSize.xl)],
     verify: (_) {
-      verify(() => repository.save(
-            kDefaultSettings.copyWith(textSize: TextSize.xl),
-          )).called(1);
+      verify(
+        () => repository.save(kDefaultSettings.copyWith(textSize: TextSize.xl)),
+      ).called(1);
     },
   );
 
@@ -50,13 +48,13 @@ void main() {
     'change la disposition et la persiste',
     build: () => SettingsBloc(repository, kDefaultSettings),
     act: (bloc) => bloc.add(const LayoutSelected(ContactLayout.wide)),
-    expect: () => [
-      kDefaultSettings.copyWith(layout: ContactLayout.wide),
-    ],
+    expect: () => [kDefaultSettings.copyWith(layout: ContactLayout.wide)],
     verify: (_) {
-      verify(() => repository.save(
-            kDefaultSettings.copyWith(layout: ContactLayout.wide),
-          )).called(1);
+      verify(
+        () => repository.save(
+          kDefaultSettings.copyWith(layout: ContactLayout.wide),
+        ),
+      ).called(1);
     },
   );
 
@@ -69,9 +67,11 @@ void main() {
       kDefaultSettings.copyWith(emergencyStyle: EmergencyStyle.highlight),
     ],
     verify: (_) {
-      verify(() => repository.save(
-            kDefaultSettings.copyWith(emergencyStyle: EmergencyStyle.highlight),
-          )).called(1);
+      verify(
+        () => repository.save(
+          kDefaultSettings.copyWith(emergencyStyle: EmergencyStyle.highlight),
+        ),
+      ).called(1);
     },
   );
 
@@ -79,13 +79,11 @@ void main() {
     'change la casse des noms et la persiste',
     build: () => SettingsBloc(repository, kDefaultSettings),
     act: (bloc) => bloc.add(const UppercaseNamesSelected(true)),
-    expect: () => [
-      kDefaultSettings.copyWith(uppercaseNames: true),
-    ],
+    expect: () => [kDefaultSettings.copyWith(uppercaseNames: true)],
     verify: (_) {
-      verify(() => repository.save(
-            kDefaultSettings.copyWith(uppercaseNames: true),
-          )).called(1);
+      verify(
+        () => repository.save(kDefaultSettings.copyWith(uppercaseNames: true)),
+      ).called(1);
     },
   );
 
@@ -97,9 +95,11 @@ void main() {
       ..add(const TextSizeSelected(TextSize.xl)),
     expect: () => [
       kDefaultSettings.copyWith(palette: AppPalette.yellow),
-      // Le second changement part de l'état courant, pas des défauts : sans
-      // cela, choisir un palier après un thème effacerait le thème.
-      kDefaultSettings.copyWith(palette: AppPalette.yellow, textSize: TextSize.xl),
+
+      kDefaultSettings.copyWith(
+        palette: AppPalette.yellow,
+        textSize: TextSize.xl,
+      ),
     ],
   );
 

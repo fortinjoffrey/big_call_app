@@ -3,8 +3,6 @@ import 'package:big_call_app/domain/ports/settings_repository.dart';
 import 'package:big_call_app/presentation/settings/settings_event.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-/// L'état EST les réglages : il n'y a ni chargement ni erreur à représenter,
-/// puisque main() a déjà lu les préférences avant runApp.
 class SettingsBloc extends Bloc<SettingsEvent, AppSettings> {
   SettingsBloc(this._repository, AppSettings initial) : super(initial) {
     on<ThemeSelected>((event, emit) async {

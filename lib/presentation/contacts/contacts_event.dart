@@ -6,7 +6,6 @@ final class ContactsRequested extends ContactsEvent {
   const ContactsRequested();
 }
 
-/// Texte déjà composé par la carte : « Marie » ou « Marie Mobile ».
 final class LabelSpoken extends ContactsEvent {
   const LabelSpoken(this.text);
   final String text;

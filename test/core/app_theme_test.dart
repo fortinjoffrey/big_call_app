@@ -18,8 +18,14 @@ void main() {
     final light = buildTheme(AppPalette.light, TextSize.m);
     final dark = buildTheme(AppPalette.dark, TextSize.m);
 
-    expect(light.scaffoldBackgroundColor, paletteColors[AppPalette.light]!.background);
-    expect(dark.scaffoldBackgroundColor, paletteColors[AppPalette.dark]!.background);
+    expect(
+      light.scaffoldBackgroundColor,
+      paletteColors[AppPalette.light]!.background,
+    );
+    expect(
+      dark.scaffoldBackgroundColor,
+      paletteColors[AppPalette.dark]!.background,
+    );
   });
 
   test('la police Atkinson Hyperlegible est appliquee', () {
@@ -31,8 +37,6 @@ void main() {
     final theme = buildTheme(AppPalette.yellow, TextSize.m);
     final colors = paletteColors[AppPalette.yellow]!;
 
-    // Piège de copier-coller : les trois styles se ressemblent, mais l'en-tête
-    // se pose sur un fond différent du reste de l'écran.
     expect(theme.textTheme.labelLarge!.color, colors.onHeader);
     expect(theme.textTheme.displayLarge!.color, colors.onBackground);
   });

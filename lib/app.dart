@@ -21,11 +21,6 @@ class BigCallApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // SettingsBloc est AU-DESSUS de MaterialApp : un fournisseur placé dans
-    // `home:` serait invisible aux routes poussées ensuite (Navigator les
-    // insère comme sœurs de `home`, pas comme descendantes), et l'écran de
-    // réglages planterait à l'ouverture. Ce placement fait aussi qu'un
-    // changement de palette repeint tout l'arbre, ce qui rend l'aperçu gratuit.
     return BlocProvider(
       create: (_) => SettingsBloc(getIt<SettingsRepository>(), initialSettings),
       child: BlocBuilder<SettingsBloc, AppSettings>(
@@ -36,12 +31,7 @@ class BigCallApp extends StatelessWidget {
             theme: buildTheme(settings.palette, settings.textSize),
             builder: (context, child) => MediaQuery.withClampedTextScaling(
               maxScaleFactor: kMaxTextScaleFactor,
-              // Compense le `height: 1.3` du thème : Flutter l'applique à
-              // chaque ligne, seule ou non, ce qui grossirait chaque carte
-              // d'environ 18 % (37 px contre 44 px, mesuré à taille 34).
-              // En retirant l'espace au-dessus de la première ligne et sous
-              // la dernière, un texte d'une seule ligne retrouve sa hauteur
-              // compacte tandis qu'un nom qui se replie garde son interligne.
+
               child: DefaultTextStyle.merge(
                 textHeightBehavior: const TextHeightBehavior(
                   applyHeightToFirstAscent: false,

@@ -31,19 +31,12 @@ void main() {
     when(() => settingsBloc.state).thenReturn(kDefaultSettings);
   });
 
-  // Le gabarit de test par défaut fait 800×600 — plus court qu'un téléphone.
-  // On adapte la fenêtre à la page, jamais l'inverse.
   void useTallSurface(WidgetTester tester) {
     tester.view.physicalSize = const Size(1080, 2400);
     tester.view.devicePixelRatio = 1.0;
     addTearDown(tester.view.reset);
   }
 
-  // `_openSettings` pousse `SettingsPage` via `Navigator`, ce qui l'insère
-  // comme une nouvelle route sous le `Navigator` implicite de `MaterialApp`
-  // — donc *à côté* de `home`, pas en dessous. Un provider posé dans `home`
-  // ne serait visible que par la première route ; il doit englober
-  // `MaterialApp` pour rester un ancêtre de toutes les routes poussées.
   Widget host({EmergencyStyle emergencyStyle = EmergencyStyle.section}) =>
       MultiBlocProvider(
         providers: [
@@ -60,14 +53,17 @@ void main() {
         ),
       );
 
-  testWidgets('affiche les deux sections quand les favoris sont disponibles',
-      (tester) async {
+  testWidgets('affiche les deux sections quand les favoris sont disponibles', (
+    tester,
+  ) async {
     useTallSurface(tester);
-    when(() => bloc.state).thenReturn(const ContactsReady(
-      favorites: [joffrey, marie],
-      others: [anneMarie, docteur],
-      showFavoritesSection: true,
-    ));
+    when(() => bloc.state).thenReturn(
+      const ContactsReady(
+        favorites: [joffrey, marie],
+        others: [anneMarie, docteur],
+        showFavoritesSection: true,
+      ),
+    );
 
     await tester.pumpWidget(host());
 
@@ -75,132 +71,158 @@ void main() {
     expect(find.text('AUTRES CONTACTS'), findsOneWidget);
   });
 
-  testWidgets('avec section favoris, l appui long sur son en-tete ouvre les reglages',
-      (tester) async {
-    useTallSurface(tester);
-    when(() => bloc.state).thenReturn(const ContactsReady(
-      favorites: [joffrey, marie],
-      others: [anneMarie, docteur],
-      showFavoritesSection: true,
-    ));
+  testWidgets(
+    'avec section favoris, l appui long sur son en-tete ouvre les reglages',
+    (tester) async {
+      useTallSurface(tester);
+      when(() => bloc.state).thenReturn(
+        const ContactsReady(
+          favorites: [joffrey, marie],
+          others: [anneMarie, docteur],
+          showFavoritesSection: true,
+        ),
+      );
 
-    await tester.pumpWidget(host());
-    await tester.longPress(find.text('FAVORIS'));
-    await tester.pumpAndSettle();
+      await tester.pumpWidget(host());
+      await tester.longPress(find.text('FAVORIS'));
+      await tester.pumpAndSettle();
 
-    expect(find.byType(SettingsPage), findsOneWidget);
-  });
+      expect(find.byType(SettingsPage), findsOneWidget);
+    },
+  );
 
   testWidgets(
-      'style section : la section URGENCE se place entre FAVORIS et AUTRES CONTACTS',
-      (tester) async {
-    useTallSurface(tester);
-    when(() => bloc.state).thenReturn(const ContactsReady(
-      favorites: [joffrey, samu, marie],
-      others: [anneMarie, docteur],
-      showFavoritesSection: true,
-    ));
+    'style section : la section URGENCE se place entre FAVORIS et AUTRES CONTACTS',
+    (tester) async {
+      useTallSurface(tester);
+      when(() => bloc.state).thenReturn(
+        const ContactsReady(
+          favorites: [joffrey, samu, marie],
+          others: [anneMarie, docteur],
+          showFavoritesSection: true,
+        ),
+      );
 
-    await tester.pumpWidget(host());
+      await tester.pumpWidget(host());
 
-    final favorisHeaderY = tester.getTopLeft(find.text('FAVORIS')).dy;
-    final urgenceHeaderY = tester.getTopLeft(find.text('URGENCE')).dy;
-    final allContactsHeaderY =
-        tester.getTopLeft(find.text('AUTRES CONTACTS')).dy;
+      final favorisHeaderY = tester.getTopLeft(find.text('FAVORIS')).dy;
+      final urgenceHeaderY = tester.getTopLeft(find.text('URGENCE')).dy;
+      final allContactsHeaderY = tester
+          .getTopLeft(find.text('AUTRES CONTACTS'))
+          .dy;
 
-    expect(find.text('URGENCE'), findsOneWidget);
-    expect(urgenceHeaderY, greaterThan(favorisHeaderY));
-    expect(urgenceHeaderY, lessThan(allContactsHeaderY));
-  });
-
-  testWidgets(
-      'style section : le contact SAMU quitte les favoris pour la section URGENCE',
-      (tester) async {
-    useTallSurface(tester);
-    when(() => bloc.state).thenReturn(const ContactsReady(
-      favorites: [joffrey, samu, marie],
-      others: [anneMarie, docteur],
-      showFavoritesSection: true,
-    ));
-
-    await tester.pumpWidget(host());
-
-    final urgenceHeaderY = tester.getTopLeft(find.text('URGENCE')).dy;
-    final samuY = tester.getTopLeft(find.text('SAMU')).dy;
-    final allContactsHeaderY =
-        tester.getTopLeft(find.text('AUTRES CONTACTS')).dy;
-
-    expect(samuY, greaterThan(urgenceHeaderY));
-    expect(samuY, lessThan(allContactsHeaderY));
-  });
+      expect(find.text('URGENCE'), findsOneWidget);
+      expect(urgenceHeaderY, greaterThan(favorisHeaderY));
+      expect(urgenceHeaderY, lessThan(allContactsHeaderY));
+    },
+  );
 
   testWidgets(
-      'style bouton rouge : pas de section URGENCE, le contact reste dans ses favoris',
-      (tester) async {
-    useTallSurface(tester);
-    when(() => bloc.state).thenReturn(const ContactsReady(
-      favorites: [joffrey, samu, marie],
-      others: [anneMarie, docteur],
-      showFavoritesSection: true,
-    ));
+    'style section : le contact SAMU quitte les favoris pour la section URGENCE',
+    (tester) async {
+      useTallSurface(tester);
+      when(() => bloc.state).thenReturn(
+        const ContactsReady(
+          favorites: [joffrey, samu, marie],
+          others: [anneMarie, docteur],
+          showFavoritesSection: true,
+        ),
+      );
 
-    await tester.pumpWidget(host(emergencyStyle: EmergencyStyle.highlight));
+      await tester.pumpWidget(host());
 
-    expect(find.text('URGENCE'), findsNothing);
-    expect(find.text('SAMU'), findsOneWidget);
-  });
+      final urgenceHeaderY = tester.getTopLeft(find.text('URGENCE')).dy;
+      final samuY = tester.getTopLeft(find.text('SAMU')).dy;
+      final allContactsHeaderY = tester
+          .getTopLeft(find.text('AUTRES CONTACTS'))
+          .dy;
+
+      expect(samuY, greaterThan(urgenceHeaderY));
+      expect(samuY, lessThan(allContactsHeaderY));
+    },
+  );
 
   testWidgets(
-      'style comme les autres : pas de section URGENCE, le contact reste dans ses favoris',
-      (tester) async {
-    useTallSurface(tester);
-    when(() => bloc.state).thenReturn(const ContactsReady(
-      favorites: [joffrey, samu, marie],
-      others: [anneMarie, docteur],
-      showFavoritesSection: true,
-    ));
+    'style bouton rouge : pas de section URGENCE, le contact reste dans ses favoris',
+    (tester) async {
+      useTallSurface(tester);
+      when(() => bloc.state).thenReturn(
+        const ContactsReady(
+          favorites: [joffrey, samu, marie],
+          others: [anneMarie, docteur],
+          showFavoritesSection: true,
+        ),
+      );
 
-    await tester.pumpWidget(host(emergencyStyle: EmergencyStyle.none));
+      await tester.pumpWidget(host(emergencyStyle: EmergencyStyle.highlight));
 
-    expect(find.text('URGENCE'), findsNothing);
-    expect(find.text('SAMU'), findsOneWidget);
-  });
+      expect(find.text('URGENCE'), findsNothing);
+      expect(find.text('SAMU'), findsOneWidget);
+    },
+  );
 
-  testWidgets('masque la section favoris quand la plateforme ne la fournit pas',
-      (tester) async {
-    useTallSurface(tester);
-    when(() => bloc.state).thenReturn(const ContactsReady(
-      favorites: [],
-      others: [joffrey, marie, docteur, anneMarie],
-      showFavoritesSection: false,
-    ));
+  testWidgets(
+    'style comme les autres : pas de section URGENCE, le contact reste dans ses favoris',
+    (tester) async {
+      useTallSurface(tester);
+      when(() => bloc.state).thenReturn(
+        const ContactsReady(
+          favorites: [joffrey, samu, marie],
+          others: [anneMarie, docteur],
+          showFavoritesSection: true,
+        ),
+      );
 
-    await tester.pumpWidget(host());
+      await tester.pumpWidget(host(emergencyStyle: EmergencyStyle.none));
 
-    expect(find.text('FAVORIS'), findsNothing);
-    expect(find.text('AUTRES CONTACTS'), findsOneWidget);
-  });
+      expect(find.text('URGENCE'), findsNothing);
+      expect(find.text('SAMU'), findsOneWidget);
+    },
+  );
 
-  testWidgets('sans section favoris, l appui long sur l autre en-tete ouvre les reglages',
-      (tester) async {
-    useTallSurface(tester);
-    when(() => bloc.state).thenReturn(const ContactsReady(
-      favorites: [],
-      others: [joffrey, marie],
-      showFavoritesSection: false,
-    ));
+  testWidgets(
+    'masque la section favoris quand la plateforme ne la fournit pas',
+    (tester) async {
+      useTallSurface(tester);
+      when(() => bloc.state).thenReturn(
+        const ContactsReady(
+          favorites: [],
+          others: [joffrey, marie, docteur, anneMarie],
+          showFavoritesSection: false,
+        ),
+      );
 
-    await tester.pumpWidget(host());
-    // Sur iOS la section « Favoris » n'existe pas : si l'appui long restait
-    // attaché à son en-tête, les réglages deviendraient inatteignables.
-    await tester.longPress(find.text('AUTRES CONTACTS'));
-    await tester.pumpAndSettle();
+      await tester.pumpWidget(host());
 
-    expect(find.byType(SettingsPage), findsOneWidget);
-  });
+      expect(find.text('FAVORIS'), findsNothing);
+      expect(find.text('AUTRES CONTACTS'), findsOneWidget);
+    },
+  );
 
-  testWidgets('permission refusee : ecran plein avec bouton AUTORISER',
-      (tester) async {
+  testWidgets(
+    'sans section favoris, l appui long sur l autre en-tete ouvre les reglages',
+    (tester) async {
+      useTallSurface(tester);
+      when(() => bloc.state).thenReturn(
+        const ContactsReady(
+          favorites: [],
+          others: [joffrey, marie],
+          showFavoritesSection: false,
+        ),
+      );
+
+      await tester.pumpWidget(host());
+
+      await tester.longPress(find.text('AUTRES CONTACTS'));
+      await tester.pumpAndSettle();
+
+      expect(find.byType(SettingsPage), findsOneWidget);
+    },
+  );
+
+  testWidgets('permission refusee : ecran plein avec bouton AUTORISER', (
+    tester,
+  ) async {
     useTallSurface(tester);
     when(() => bloc.state).thenReturn(const ContactsPermissionDenied());
 
@@ -210,14 +232,17 @@ void main() {
     expect(find.text('AUTORISER'), findsOneWidget);
   });
 
-  testWidgets('aucun contact : message explicite, pas de page blanche',
-      (tester) async {
+  testWidgets('aucun contact : message explicite, pas de page blanche', (
+    tester,
+  ) async {
     useTallSurface(tester);
-    when(() => bloc.state).thenReturn(const ContactsReady(
-      favorites: [],
-      others: [],
-      showFavoritesSection: true,
-    ));
+    when(() => bloc.state).thenReturn(
+      const ContactsReady(
+        favorites: [],
+        others: [],
+        showFavoritesSection: true,
+      ),
+    );
 
     await tester.pumpWidget(host());
 

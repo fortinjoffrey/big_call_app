@@ -55,10 +55,7 @@ void main() {
     );
     expect(
       mapper.labelFor(
-        fc.Phone(
-          number: '1',
-          label: const fc.Label(fc.PhoneLabel.companyMain),
-        ),
+        fc.Phone(number: '1', label: const fc.Label(fc.PhoneLabel.companyMain)),
       ),
       'Standard',
     );
@@ -88,13 +85,16 @@ void main() {
     expect(mapper.labelFor(phone), 'Autre');
   });
 
-  test('retombe sur Autre quand le libelle personnalise n est que des espaces', () {
-    final phone = fc.Phone(
-      number: '1',
-      label: const fc.Label(fc.PhoneLabel.custom, '   '),
-    );
-    expect(mapper.labelFor(phone), 'Autre');
-  });
+  test(
+    'retombe sur Autre quand le libelle personnalise n est que des espaces',
+    () {
+      final phone = fc.Phone(
+        number: '1',
+        label: const fc.Label(fc.PhoneLabel.custom, '   '),
+      );
+      expect(mapper.labelFor(phone), 'Autre');
+    },
+  );
 
   test('extrait nom, numeros et statut favori', () {
     final contact = _contact(

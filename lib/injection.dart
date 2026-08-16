@@ -15,16 +15,17 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 final getIt = GetIt.instance;
 
-/// Seul endroit où les implémentations concrètes rencontrent les ports.
 Future<void> configureDependencies() async {
   final prefs = await SharedPreferences.getInstance();
 
   getIt
     ..registerSingleton<SettingsRepository>(PrefsSettingsRepository(prefs))
     ..registerSingleton<ContactRepository>(
-        const FlutterContactsRepository(ContactMapper()))
+      const FlutterContactsRepository(ContactMapper()),
+    )
     ..registerSingleton<CallService>(const IntentCallService())
     ..registerSingleton<SpeechService>(TtsSpeechService(FlutterTts()))
     ..registerSingleton<SystemSettingsService>(
-        const PermissionHandlerSettingsService());
+      const PermissionHandlerSettingsService(),
+    );
 }

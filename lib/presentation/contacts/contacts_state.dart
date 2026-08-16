@@ -12,7 +12,6 @@ sealed class ContactsState with _$ContactsState {
     required List<PhoneContact> favorites,
     required List<PhoneContact> others,
 
-    /// Faux sur iOS : la section « Favoris » est alors masquée entièrement.
     required bool showFavoritesSection,
     Failure? callError,
   }) = ContactsReady;

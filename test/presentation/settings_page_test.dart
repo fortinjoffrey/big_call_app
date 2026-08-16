@@ -23,9 +23,6 @@ void main() {
     when(() => bloc.state).thenReturn(kDefaultSettings);
   });
 
-  // Le gabarit de test par défaut fait 800×600 — plus court qu'un téléphone,
-  // et bien plus court que cinq sections avec chacune son aperçu.
-  // On adapte la fenêtre à la page, jamais l'inverse.
   void useTallSurface(WidgetTester tester) {
     tester.view.physicalSize = const Size(1080, 4000);
     tester.view.devicePixelRatio = 1.0;
@@ -33,12 +30,12 @@ void main() {
   }
 
   Widget host() => MaterialApp(
-        theme: buildTheme(AppPalette.light, TextSize.m),
-        home: BlocProvider<SettingsBloc>.value(
-          value: bloc,
-          child: const SettingsPage(),
-        ),
-      );
+    theme: buildTheme(AppPalette.light, TextSize.m),
+    home: BlocProvider<SettingsBloc>.value(
+      value: bloc,
+      child: const SettingsPage(),
+    ),
+  );
 
   testWidgets('propose les trois themes et les trois paliers', (tester) async {
     useTallSurface(tester);
@@ -93,14 +90,16 @@ void main() {
     expect(find.text('Comme les autres contacts'), findsOneWidget);
   });
 
-  testWidgets('choisir un style d urgence emet EmergencyStyleSelected',
-      (tester) async {
+  testWidgets('choisir un style d urgence emet EmergencyStyleSelected', (
+    tester,
+  ) async {
     useTallSurface(tester);
     await tester.pumpWidget(host());
 
     await tester.tap(find.text('Bouton rouge, à leur place'));
-    verify(() => bloc.add(const EmergencyStyleSelected(EmergencyStyle.highlight)))
-        .called(1);
+    verify(
+      () => bloc.add(const EmergencyStyleSelected(EmergencyStyle.highlight)),
+    ).called(1);
   });
 
   testWidgets('propose les deux casses de nom', (tester) async {
@@ -111,8 +110,9 @@ void main() {
     expect(find.text('Normal'), findsOneWidget);
   });
 
-  testWidgets('choisir MAJUSCULES emet UppercaseNamesSelected(true)',
-      (tester) async {
+  testWidgets('choisir MAJUSCULES emet UppercaseNamesSelected(true)', (
+    tester,
+  ) async {
     useTallSurface(tester);
     await tester.pumpWidget(host());
 
@@ -120,12 +120,13 @@ void main() {
     verify(() => bloc.add(const UppercaseNamesSelected(true))).called(1);
   });
 
-  testWidgets('choisir Normal emet UppercaseNamesSelected(false)',
-      (tester) async {
+  testWidgets('choisir Normal emet UppercaseNamesSelected(false)', (
+    tester,
+  ) async {
     useTallSurface(tester);
-    when(() => bloc.state).thenReturn(
-      kDefaultSettings.copyWith(uppercaseNames: true),
-    );
+    when(
+      () => bloc.state,
+    ).thenReturn(kDefaultSettings.copyWith(uppercaseNames: true));
     await tester.pumpWidget(host());
 
     await tester.tap(find.text('Normal'));
@@ -133,17 +134,16 @@ void main() {
   });
 
   testWidgets(
-      'affiche un apercu unique en haut de page, avec le vrai widget de carte',
-      (tester) async {
-    useTallSurface(tester);
-    await tester.pumpWidget(host());
+    'affiche un apercu unique en haut de page, avec le vrai widget de carte',
+    (tester) async {
+      useTallSurface(tester);
+      await tester.pumpWidget(host());
 
-    // Un seul aperçu : deux cartes, un contact ordinaire et un numéro
-    // d'urgence, plus aucun aperçu répété section par section.
-    expect(find.byType(ContactCard), findsNWidgets(2));
-    expect(find.text('Marie'), findsOneWidget);
-    expect(find.text('SAMU'), findsOneWidget);
-  });
+      expect(find.byType(ContactCard), findsNWidgets(2));
+      expect(find.text('Marie'), findsOneWidget);
+      expect(find.text('SAMU'), findsOneWidget);
+    },
+  );
 
   testWidgets('l apercu reflete le theme et le palier choisis', (tester) async {
     useTallSurface(tester);
@@ -157,16 +157,16 @@ void main() {
       ),
     );
 
-    await tester.pumpWidget(MaterialApp(
-      theme: buildTheme(AppPalette.dark, TextSize.xl),
-      home: BlocProvider<SettingsBloc>.value(
-        value: bloc,
-        child: const SettingsPage(),
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: buildTheme(AppPalette.dark, TextSize.xl),
+        home: BlocProvider<SettingsBloc>.value(
+          value: bloc,
+          child: const SettingsPage(),
+        ),
       ),
-    ));
+    );
 
-    // L'aperçu n'existe que pour montrer l'effet avant de s'engager : une
-    // carte figée sur la palette claire passerait les autres tests.
     final card = tester.widget<ContactCard>(find.byType(ContactCard).first);
     expect(card.palette, AppPalette.dark);
 
@@ -176,22 +176,23 @@ void main() {
   });
 
   testWidgets(
-      "l apercu de la section urgence porte un numero d urgence et refletela casse",
-      (tester) async {
-    useTallSurface(tester);
-    when(() => bloc.state).thenReturn(
-      kDefaultSettings.copyWith(
-        uppercaseNames: true,
-        emergencyStyle: EmergencyStyle.highlight,
-      ),
-    );
-    await tester.pumpWidget(host());
+    "l apercu de la section urgence porte un numero d urgence et refletela casse",
+    (tester) async {
+      useTallSurface(tester);
+      when(() => bloc.state).thenReturn(
+        kDefaultSettings.copyWith(
+          uppercaseNames: true,
+          emergencyStyle: EmergencyStyle.highlight,
+        ),
+      );
+      await tester.pumpWidget(host());
 
-    final cards = tester.widgetList<ContactCard>(find.byType(ContactCard));
-    final emergencyCard = cards.last;
-    expect(emergencyCard.contact.numbers.single.number, '15');
-    expect(emergencyCard.highlightEmergencyNumbers, isTrue);
-    expect(emergencyCard.uppercaseNames, isTrue);
-    expect(find.text('SAMU'), findsOneWidget);
-  });
+      final cards = tester.widgetList<ContactCard>(find.byType(ContactCard));
+      final emergencyCard = cards.last;
+      expect(emergencyCard.contact.numbers.single.number, '15');
+      expect(emergencyCard.highlightEmergencyNumbers, isTrue);
+      expect(emergencyCard.uppercaseNames, isTrue);
+      expect(find.text('SAMU'), findsOneWidget);
+    },
+  );
 }
