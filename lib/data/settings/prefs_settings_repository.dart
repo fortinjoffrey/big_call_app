@@ -18,6 +18,12 @@ class PrefsSettingsRepository implements SettingsRepository {
     );
   }
 
+  /// Ne rend pas compte d'un échec, délibérément. `setString` renvoie un
+  /// booléen que l'on ignore : une écriture qui échoue (mémoire pleine, ROM
+  /// constructeur capricieuse) laisse simplement le réglage non enregistré, et
+  /// `load()` retombe alors sur les valeurs par défaut au lieu de planter.
+  /// Remonter l'erreur obligerait l'écran de réglages à afficher quelque chose
+  /// dont l'utilisatrice ne pourrait rien faire.
   @override
   Future<void> save(AppSettings settings) async {
     await _prefs.setString(_paletteKey, settings.palette.name);
