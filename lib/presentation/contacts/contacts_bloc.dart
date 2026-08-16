@@ -4,6 +4,7 @@ import 'package:big_call_app/domain/entities/phone_contact.dart';
 import 'package:big_call_app/domain/ports/call_service.dart';
 import 'package:big_call_app/domain/ports/contact_repository.dart';
 import 'package:big_call_app/domain/ports/speech_service.dart';
+import 'package:big_call_app/domain/ports/system_settings_service.dart';
 import 'package:big_call_app/presentation/contacts/contacts_event.dart';
 import 'package:big_call_app/presentation/contacts/contacts_state.dart';
 import 'package:bloc_concurrency/bloc_concurrency.dart';
@@ -11,8 +12,12 @@ import 'package:diacritic/diacritic.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class ContactsBloc extends Bloc<ContactsEvent, ContactsState> {
-  ContactsBloc(this._repository, this._callService, this._speech)
-      : super(const ContactsLoading()) {
+  ContactsBloc(
+    this._repository,
+    this._callService,
+    this._speech,
+    this._systemSettings,
+  ) : super(const ContactsLoading()) {
     on<ContactsRequested>(_onRequested);
     // C'est le `stop()` en tête de `_onSpoken` qui coupe la parole en cours —
     // pas ce transformer. `restartable()` annule la suite d'un gestionnaire
@@ -23,11 +28,14 @@ class ContactsBloc extends Bloc<ContactsEvent, ContactsState> {
     on<LabelSpoken>(_onSpoken, transformer: restartable());
     on<CallRequested>(_onCall);
     on<CallErrorDismissed>(_onErrorDismissed);
+    on<SystemSettingsRequested>(
+        (event, emit) => _systemSettings.openAppSettings());
   }
 
   final ContactRepository _repository;
   final CallService _callService;
   final SpeechService _speech;
+  final SystemSettingsService _systemSettings;
 
   Future<void> _onRequested(
     ContactsRequested event,

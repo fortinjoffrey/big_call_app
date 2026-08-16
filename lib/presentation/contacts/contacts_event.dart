@@ -20,3 +20,7 @@ final class CallRequested extends ContactsEvent {
 final class CallErrorDismissed extends ContactsEvent {
   const CallErrorDismissed();
 }
+
+final class SystemSettingsRequested extends ContactsEvent {
+  const SystemSettingsRequested();
+}

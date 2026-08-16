@@ -5,6 +5,7 @@ import 'package:big_call_app/domain/entities/phone_contact.dart';
 import 'package:big_call_app/domain/ports/call_service.dart';
 import 'package:big_call_app/domain/ports/contact_repository.dart';
 import 'package:big_call_app/domain/ports/speech_service.dart';
+import 'package:big_call_app/domain/ports/system_settings_service.dart';
 import 'package:big_call_app/presentation/contacts/contacts_bloc.dart';
 import 'package:big_call_app/presentation/contacts/contacts_event.dart';
 import 'package:big_call_app/presentation/contacts/contacts_state.dart';
@@ -20,17 +21,23 @@ class _MockCallService extends Mock implements CallService {}
 
 class _MockSpeechService extends Mock implements SpeechService {}
 
+class _MockSystemSettingsService extends Mock
+    implements SystemSettingsService {}
+
 void main() {
   late _MockRepository repository;
   late _MockCallService callService;
   late _MockSpeechService speech;
+  late _MockSystemSettingsService systemSettings;
 
-  ContactsBloc build() => ContactsBloc(repository, callService, speech);
+  ContactsBloc build() =>
+      ContactsBloc(repository, callService, speech, systemSettings);
 
   setUp(() {
     repository = _MockRepository();
     callService = _MockCallService();
     speech = _MockSpeechService();
+    systemSettings = _MockSystemSettingsService();
 
     when(() => repository.supportsFavorites).thenReturn(true);
     when(() => repository.loadContacts())
@@ -38,6 +45,7 @@ void main() {
     when(() => callService.call(any())).thenAnswer((_) async => const Ok(null));
     when(() => speech.speak(any())).thenAnswer((_) async {});
     when(() => speech.stop()).thenAnswer((_) async {});
+    when(() => systemSettings.openAppSettings()).thenAnswer((_) async {});
   });
 
   blocTest<ContactsBloc, ContactsState>(
@@ -132,6 +140,16 @@ void main() {
           .having((s) => s.callError, 'erreur', const Failure.unavailable()),
       isA<ContactsReady>().having((s) => s.callError, 'erreur effacee', isNull),
     ],
+  );
+
+  blocTest<ContactsBloc, ContactsState>(
+    'demande d ouverture des reglages systeme appelle le port sans emettre d etat',
+    build: build,
+    act: (bloc) => bloc.add(const SystemSettingsRequested()),
+    expect: () => <ContactsState>[],
+    verify: (_) {
+      verify(() => systemSettings.openAppSettings()).called(1);
+    },
   );
 
   blocTest<ContactsBloc, ContactsState>(
