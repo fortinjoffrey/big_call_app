@@ -47,6 +47,20 @@ void main() {
   );
 
   blocTest<SettingsBloc, AppSettings>(
+    'deux changements successifs s accumulent',
+    build: () => SettingsBloc(repository, kDefaultSettings),
+    act: (bloc) => bloc
+      ..add(const ThemeSelected(AppPalette.yellow))
+      ..add(const TextSizeSelected(TextSize.xl)),
+    expect: () => [
+      const AppSettings(palette: AppPalette.yellow, textSize: TextSize.m),
+      // Le second changement part de l'état courant, pas des défauts : sans
+      // cela, choisir un palier après un thème effacerait le thème.
+      const AppSettings(palette: AppPalette.yellow, textSize: TextSize.xl),
+    ],
+  );
+
+  blocTest<SettingsBloc, AppSettings>(
     'demarre sur les reglages fournis par main()',
     build: () => SettingsBloc(
       repository,
