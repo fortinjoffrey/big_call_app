@@ -18,12 +18,14 @@ class ContactsPage extends StatelessWidget {
     required this.palette,
     required this.layout,
     required this.emergencyStyle,
+    this.uppercaseNames = false,
     super.key,
   });
 
   final AppPalette palette;
   final ContactLayout layout;
   final EmergencyStyle emergencyStyle;
+  final bool uppercaseNames;
 
   @override
   Widget build(BuildContext context) {
@@ -80,6 +82,7 @@ class ContactsPage extends StatelessWidget {
           palette: palette,
           layout: layout,
           highlightEmergencyNumbers: highlight,
+          uppercaseNames: uppercaseNames,
           onSpeak: (text) => bloc.add(LabelSpoken(text)),
           onCall: (number) => bloc.add(CallRequested(number.number)),
         );

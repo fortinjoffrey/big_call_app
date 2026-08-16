@@ -202,6 +202,57 @@ void main() {
     });
   });
 
+  group('nom en majuscules', () {
+    testWidgets('le nom reste inchange quand le reglage est desactive',
+        (tester) async {
+      await tester.pumpWidget(host(onSpeak: (_) {}, onCall: (_) {}));
+
+      expect(find.text('Marie'), findsOneWidget);
+      expect(find.text('MARIE'), findsNothing);
+    });
+
+    testWidgets('le nom passe en capitales quand le reglage est active',
+        (tester) async {
+      await tester.pumpWidget(MaterialApp(
+        theme: buildTheme(AppPalette.light, TextSize.m),
+        home: Scaffold(
+          body: ContactCard(
+            contact: marie,
+            palette: AppPalette.light,
+            layout: ContactLayout.compact,
+            uppercaseNames: true,
+            onSpeak: (_) {},
+            onCall: (_) {},
+          ),
+        ),
+      ));
+
+      expect(find.text('MARIE'), findsOneWidget);
+      expect(find.text('Marie'), findsNothing);
+    });
+
+    testWidgets('ce qui est prononce garde la casse d origine du contact',
+        (tester) async {
+      final spoken = <String>[];
+      await tester.pumpWidget(MaterialApp(
+        theme: buildTheme(AppPalette.light, TextSize.m),
+        home: Scaffold(
+          body: ContactCard(
+            contact: marie,
+            palette: AppPalette.light,
+            layout: ContactLayout.compact,
+            uppercaseNames: true,
+            onSpeak: spoken.add,
+            onCall: (_) {},
+          ),
+        ),
+      ));
+
+      await tester.tap(find.text('MARIE'));
+      expect(spoken, ['Marie']);
+    });
+  });
+
   group('mise en avant des numeros d urgence', () {
     const contact = PhoneContact(
       id: 'urgence',

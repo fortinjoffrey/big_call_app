@@ -3,19 +3,28 @@ import 'package:big_call_app/domain/entities/app_settings.dart';
 import 'package:big_call_app/domain/entities/contact_number.dart';
 import 'package:big_call_app/domain/entities/phone_contact.dart';
 import 'package:big_call_app/presentation/contacts/widgets/contact_card.dart';
+import 'package:big_call_app/presentation/contacts/widgets/section_header.dart';
 import 'package:big_call_app/presentation/settings/settings_bloc.dart';
 import 'package:big_call_app/presentation/settings/settings_event.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+// Contact à un seul numéro : les aperçus restent compacts, sans libellé de
+// numéro qui n'apporterait rien ici.
 const _previewContact = PhoneContact(
   id: 'preview',
   displayName: 'Marie',
   isFavorite: true,
-  numbers: [
-    ContactNumber(number: '0611223344', label: 'Mobile'),
-    ContactNumber(number: '0122334455', label: 'Fixe'),
-  ],
+  numbers: [ContactNumber(number: '0611223344', label: 'Mobile')],
+);
+
+// Numéro d'urgence (15) : seul moyen de montrer le bouton rouge et l'effet
+// des trois styles dans la section « Numéros d'urgence ».
+const _previewEmergencyContact = PhoneContact(
+  id: 'preview-emergency',
+  displayName: 'SAMU',
+  isFavorite: true,
+  numbers: [ContactNumber(number: '15', label: 'Fixe')],
 );
 
 class SettingsPage extends StatelessWidget {
@@ -41,78 +50,171 @@ class SettingsPage extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text('Aperçu', style: theme.textTheme.titleLarge),
-              const SizedBox(height: 8),
-              // L'aperçu utilise le vrai widget : ce qu'on voit ici est
-              // exactement ce que la liste affichera.
-              // `IgnorePointer` : sans lui, le bouton vert de l'aperçu réagit
-              // au toucher (ondulation de l'InkWell) sans rien déclencher. Un
-              // retour visuel suivi de rien se lit comme une panne, pas comme
-              // un aperçu. Mieux vaut qu'il ne réagisse pas du tout.
-              IgnorePointer(
-                child: ContactCard(
-                  contact: _previewContact,
-                  palette: settings.palette,
-                  layout: settings.layout,
-                  onSpeak: (_) {},
-                  onCall: (_) {},
-                ),
-              ),
-              const SizedBox(height: 28),
-              Text('Thème', style: theme.textTheme.titleLarge),
-              const SizedBox(height: 8),
-              for (final palette in AppPalette.values)
-                _ChoiceTile(
-                  label: palette.label,
-                  selected: palette == settings.palette,
-                  palette: settings.palette,
-                  onTap: () =>
-                      context.read<SettingsBloc>().add(ThemeSelected(palette)),
-                ),
-              const SizedBox(height: 28),
-              Text('Taille du texte', style: theme.textTheme.titleLarge),
-              const SizedBox(height: 8),
-              Row(
-                children: [
-                  for (final size in TextSize.values)
-                    Expanded(
-                      child: _ChoiceTile(
-                        label: size.label,
-                        selected: size == settings.textSize,
-                        palette: settings.palette,
-                        centered: true,
-                        onTap: () => context.read<SettingsBloc>().add(
-                          TextSizeSelected(size),
-                        ),
-                      ),
+              _Section(
+                title: 'Thème',
+                palette: settings.palette,
+                preview: _preview(settings),
+                tiles: [
+                  for (final palette in AppPalette.values)
+                    _ChoiceTile(
+                      label: palette.label,
+                      selected: palette == settings.palette,
+                      palette: settings.palette,
+                      onTap: () => context
+                          .read<SettingsBloc>()
+                          .add(ThemeSelected(palette)),
                     ),
                 ],
               ),
-              const SizedBox(height: 28),
-              Text('Disposition', style: theme.textTheme.titleLarge),
-              const SizedBox(height: 8),
-              for (final layout in ContactLayout.values)
-                _ChoiceTile(
-                  label: layout.label,
-                  selected: layout == settings.layout,
-                  palette: settings.palette,
-                  onTap: () =>
-                      context.read<SettingsBloc>().add(LayoutSelected(layout)),
-                ),
-              const SizedBox(height: 28),
-              Text("Numéros d'urgence", style: theme.textTheme.titleLarge),
-              const SizedBox(height: 8),
-              for (final style in EmergencyStyle.values)
-                _ChoiceTile(
-                  label: style.label,
-                  selected: style == settings.emergencyStyle,
-                  palette: settings.palette,
-                  onTap: () => context
-                      .read<SettingsBloc>()
-                      .add(EmergencyStyleSelected(style)),
-                ),
+              _Section(
+                title: 'Taille du texte',
+                palette: settings.palette,
+                preview: _preview(settings),
+                tiles: [
+                  for (final size in TextSize.values)
+                    _ChoiceTile(
+                      label: size.label,
+                      selected: size == settings.textSize,
+                      palette: settings.palette,
+                      onTap: () => context
+                          .read<SettingsBloc>()
+                          .add(TextSizeSelected(size)),
+                    ),
+                ],
+              ),
+              _Section(
+                title: 'Nom des contacts',
+                palette: settings.palette,
+                preview: _preview(settings),
+                tiles: [
+                  _ChoiceTile(
+                    label: 'MAJUSCULES',
+                    selected: settings.uppercaseNames,
+                    palette: settings.palette,
+                    onTap: () => context
+                        .read<SettingsBloc>()
+                        .add(const UppercaseNamesSelected(true)),
+                  ),
+                  _ChoiceTile(
+                    label: 'Normal',
+                    selected: !settings.uppercaseNames,
+                    palette: settings.palette,
+                    onTap: () => context
+                        .read<SettingsBloc>()
+                        .add(const UppercaseNamesSelected(false)),
+                  ),
+                ],
+              ),
+              _Section(
+                title: 'Disposition',
+                palette: settings.palette,
+                preview: _preview(settings),
+                tiles: [
+                  for (final layout in ContactLayout.values)
+                    _ChoiceTile(
+                      label: layout.label,
+                      selected: layout == settings.layout,
+                      palette: settings.palette,
+                      onTap: () => context
+                          .read<SettingsBloc>()
+                          .add(LayoutSelected(layout)),
+                    ),
+                ],
+              ),
+              _Section(
+                title: "Numéros d'urgence",
+                palette: settings.palette,
+                preview: _preview(settings, emergency: true),
+                isLast: true,
+                tiles: [
+                  for (final style in EmergencyStyle.values)
+                    _ChoiceTile(
+                      label: style.label,
+                      selected: style == settings.emergencyStyle,
+                      palette: settings.palette,
+                      onTap: () => context
+                          .read<SettingsBloc>()
+                          .add(EmergencyStyleSelected(style)),
+                    ),
+                ],
+              ),
             ],
           ),
+        ),
+      ),
+    );
+  }
+
+  // L'aperçu utilise le vrai widget : ce qu'on voit ici est exactement ce
+  // que la liste affichera. `IgnorePointer` : sans lui, le bouton vert de
+  // l'aperçu réagit au toucher (ondulation de l'InkWell) sans rien
+  // déclencher. Un retour visuel suivi de rien se lit comme une panne, pas
+  // comme un aperçu. Mieux vaut qu'il ne réagisse pas du tout.
+  Widget _preview(AppSettings settings, {bool emergency = false}) {
+    return IgnorePointer(
+      child: ContactCard(
+        contact: emergency ? _previewEmergencyContact : _previewContact,
+        palette: settings.palette,
+        layout: settings.layout,
+        uppercaseNames: settings.uppercaseNames,
+        // Même règle que sur l'écran des contacts : seul le style « comme
+        // les autres contacts » laisse le bouton vert sur un numéro
+        // d'urgence.
+        highlightEmergencyNumbers:
+            emergency && settings.emergencyStyle != EmergencyStyle.none,
+        onSpeak: (_) {},
+        onCall: (_) {},
+      ),
+    );
+  }
+}
+
+/// Un bloc par réglage : titre repris de la liste des contacts, bordure
+/// franche (jamais d'ombre), aperçu réel puis contrôles. Sépare visuellement
+/// les cinq sections les unes des autres.
+class _Section extends StatelessWidget {
+  const _Section({
+    required this.title,
+    required this.palette,
+    required this.preview,
+    required this.tiles,
+    this.isLast = false,
+  });
+
+  final String title;
+  final AppPalette palette;
+  final Widget preview;
+  final List<Widget> tiles;
+  final bool isLast;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = paletteColors[palette]!;
+
+    return Padding(
+      padding: EdgeInsets.only(bottom: isLast ? 0 : 20),
+      child: Container(
+        clipBehavior: Clip.antiAlias,
+        decoration: BoxDecoration(
+          border: Border.all(color: colors.border, width: 3),
+          borderRadius: BorderRadius.circular(14),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            SectionHeader(title: title, palette: palette),
+            Padding(
+              padding: const EdgeInsets.all(12),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  preview,
+                  const SizedBox(height: 16),
+                  ...tiles,
+                ],
+              ),
+            ),
+          ],
         ),
       ),
     );
@@ -125,14 +227,12 @@ class _ChoiceTile extends StatelessWidget {
     required this.selected,
     required this.palette,
     required this.onTap,
-    this.centered = false,
   });
 
   final String label;
   final bool selected;
   final AppPalette palette;
   final VoidCallback onTap;
-  final bool centered;
 
   @override
   Widget build(BuildContext context) {
@@ -152,9 +252,6 @@ class _ChoiceTile extends StatelessWidget {
             borderRadius: BorderRadius.circular(14),
           ),
           child: Row(
-            mainAxisAlignment: centered
-                ? MainAxisAlignment.center
-                : MainAxisAlignment.start,
             children: [
               if (selected) ...[
                 Icon(Icons.check, size: 32, color: colors.onBackground),

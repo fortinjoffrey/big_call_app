@@ -31,9 +31,9 @@ extension TextSizeScale on TextSize {
       };
 
   String get label => switch (this) {
-        TextSize.m => 'M',
-        TextSize.l => 'L',
-        TextSize.xl => 'XL',
+        TextSize.m => 'Petit',
+        TextSize.l => 'Moyen',
+        TextSize.xl => 'Grand',
       };
 }
 
@@ -54,6 +54,7 @@ abstract class AppSettings with _$AppSettings {
     required TextSize textSize,
     required ContactLayout layout,
     required EmergencyStyle emergencyStyle,
+    required bool uppercaseNames,
   }) = _AppSettings;
 }
 
@@ -62,4 +63,5 @@ const kDefaultSettings = AppSettings(
   textSize: TextSize.m,
   layout: ContactLayout.compact,
   emergencyStyle: EmergencyStyle.section,
+  uppercaseNames: false,
 );

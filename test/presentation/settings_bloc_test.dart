@@ -76,6 +76,20 @@ void main() {
   );
 
   blocTest<SettingsBloc, AppSettings>(
+    'change la casse des noms et la persiste',
+    build: () => SettingsBloc(repository, kDefaultSettings),
+    act: (bloc) => bloc.add(const UppercaseNamesSelected(true)),
+    expect: () => [
+      kDefaultSettings.copyWith(uppercaseNames: true),
+    ],
+    verify: (_) {
+      verify(() => repository.save(
+            kDefaultSettings.copyWith(uppercaseNames: true),
+          )).called(1);
+    },
+  );
+
+  blocTest<SettingsBloc, AppSettings>(
     'deux changements successifs s accumulent',
     build: () => SettingsBloc(repository, kDefaultSettings),
     act: (bloc) => bloc

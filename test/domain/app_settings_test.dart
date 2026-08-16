@@ -8,10 +8,10 @@ void main() {
     expect(TextSize.xl.multiplier, 1.5);
   });
 
-  test('les libelles affiches sont des tailles de t-shirt', () {
-    expect(TextSize.m.label, 'M');
-    expect(TextSize.l.label, 'L');
-    expect(TextSize.xl.label, 'XL');
+  test('les libelles affiches sont Petit, Moyen, Grand', () {
+    expect(TextSize.m.label, 'Petit');
+    expect(TextSize.l.label, 'Moyen');
+    expect(TextSize.xl.label, 'Grand');
   });
 
   test('les reglages par defaut sont theme clair et palier M', () {
@@ -19,6 +19,7 @@ void main() {
     expect(kDefaultSettings.textSize, TextSize.m);
     expect(kDefaultSettings.layout, ContactLayout.compact);
     expect(kDefaultSettings.emergencyStyle, EmergencyStyle.section);
+    expect(kDefaultSettings.uppercaseNames, isFalse);
   });
 
   test('les libelles de disposition decrivent la position du bouton', () {

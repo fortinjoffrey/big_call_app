@@ -22,10 +22,21 @@ void main() {
       textSize: TextSize.xl,
       layout: ContactLayout.wide,
       emergencyStyle: EmergencyStyle.highlight,
+      uppercaseNames: true,
     );
     await repo.save(settings);
 
     expect(await repo.load(), settings);
+  });
+
+  test('les noms en majuscules retombent sur le defaut quand la cle est absente',
+      () async {
+    SharedPreferences.setMockInitialValues({});
+    final repo = PrefsSettingsRepository(await SharedPreferences.getInstance());
+
+    final settings = await repo.load();
+
+    expect(settings.uppercaseNames, kDefaultSettings.uppercaseNames);
   });
 
   test('retombe sur les defauts si la valeur stockee est inconnue', () async {

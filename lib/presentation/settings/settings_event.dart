@@ -51,3 +51,15 @@ final class EmergencyStyleSelected extends SettingsEvent {
   @override
   int get hashCode => emergencyStyle.hashCode;
 }
+
+final class UppercaseNamesSelected extends SettingsEvent {
+  const UppercaseNamesSelected(this.uppercaseNames);
+  final bool uppercaseNames;
+
+  @override
+  bool operator ==(Object other) =>
+      other is UppercaseNamesSelected && other.uppercaseNames == uppercaseNames;
+
+  @override
+  int get hashCode => uppercaseNames.hashCode;
+}

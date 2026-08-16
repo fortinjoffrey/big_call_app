@@ -22,11 +22,12 @@ void main() {
   // Largeur réaliste de téléphone (390dp) plutôt que 1080dp, cf.
   // contacts_golden_test.dart.
   //
-  // Hauteur mesurée empiriquement : à 390dp, le contenu de la page (au
-  // palier XL, le plus haut) se termine vers y=1382. On ajoute une marge de
-  // sécurité pour ne rien perdre, sans viser un canevas inutilement grand.
+  // Hauteur mesurée empiriquement : à 390dp, avec les cinq sections et leur
+  // aperçu chacune, le contenu de la page (au palier XL, le plus haut) se
+  // termine vers y=2838. On ajoute une marge de sécurité pour ne rien
+  // perdre, sans viser un canevas inutilement grand.
   void useGoldenSurface(WidgetTester tester) {
-    tester.view.physicalSize = const Size(390, 1440);
+    tester.view.physicalSize = const Size(390, 2900);
     tester.view.devicePixelRatio = 1.0;
     addTearDown(tester.view.reset);
   }
@@ -37,6 +38,7 @@ void main() {
       textSize: size,
       layout: ContactLayout.compact,
       emergencyStyle: EmergencyStyle.section,
+      uppercaseNames: false,
     );
     bloc = _MockSettingsBloc();
     when(() => bloc.state).thenReturn(settings);

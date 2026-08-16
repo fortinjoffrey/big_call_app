@@ -14,6 +14,7 @@ class ContactCard extends StatelessWidget {
     required this.onSpeak,
     required this.onCall,
     this.highlightEmergencyNumbers = false,
+    this.uppercaseNames = false,
     super.key,
   });
 
@@ -29,6 +30,15 @@ class ContactCard extends StatelessWidget {
   /// n'est plus qu'un repère visuel. Faux dans le style « comme les autres
   /// contacts » : même un numéro d'urgence garde alors un bouton vert.
   final bool highlightEmergencyNumbers;
+
+  /// Affiche le nom du contact en capitales quand le réglage est actif.
+  /// Ne touche ni aux libellés de numéro, ni à ce qui est prononcé ou lu par
+  /// un lecteur d'écran (`onSpeak`, `semanticLabel`) : seul le texte visible
+  /// du nom change de casse.
+  final bool uppercaseNames;
+
+  String get _displayName =>
+      uppercaseNames ? contact.displayName.toUpperCase() : contact.displayName;
 
   @override
   Widget build(BuildContext context) {
@@ -72,7 +82,7 @@ class ContactCard extends StatelessWidget {
               onTap: () => onSpeak(contact.displayName),
               child: Padding(
                 padding: const EdgeInsets.only(right: 10),
-                child: Text(contact.displayName, style: theme.textTheme.displayLarge),
+                child: Text(_displayName, style: theme.textTheme.displayLarge),
               ),
             ),
           ),
@@ -101,7 +111,7 @@ class ContactCard extends StatelessWidget {
         onTap: () => onSpeak(contact.displayName),
         child: SizedBox(
           width: double.infinity,
-          child: Text(contact.displayName, style: theme.textTheme.displayLarge),
+          child: Text(_displayName, style: theme.textTheme.displayLarge),
         ),
       ),
     );

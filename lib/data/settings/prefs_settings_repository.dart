@@ -9,6 +9,7 @@ class PrefsSettingsRepository implements SettingsRepository {
   static const _textSizeKey = 'textSize';
   static const _layoutKey = 'layout';
   static const _emergencyStyleKey = 'emergencyStyle';
+  static const _uppercaseNamesKey = 'uppercaseNames';
 
   final SharedPreferences _prefs;
 
@@ -23,6 +24,8 @@ class PrefsSettingsRepository implements SettingsRepository {
         EmergencyStyle.values,
         kDefaultSettings.emergencyStyle,
       ),
+      uppercaseNames:
+          _prefs.getBool(_uppercaseNamesKey) ?? kDefaultSettings.uppercaseNames,
     );
   }
 
@@ -38,6 +41,7 @@ class PrefsSettingsRepository implements SettingsRepository {
     await _prefs.setString(_textSizeKey, settings.textSize.name);
     await _prefs.setString(_layoutKey, settings.layout.name);
     await _prefs.setString(_emergencyStyleKey, settings.emergencyStyle.name);
+    await _prefs.setBool(_uppercaseNamesKey, settings.uppercaseNames);
   }
 
   /// Une valeur inconnue (renommage d'énumération, fichier corrompu) retombe
