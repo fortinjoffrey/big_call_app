@@ -20,6 +20,14 @@ ThemeData buildTheme(AppPalette palette, TextSize size) {
         // replie — un nom long au palier XL, un message plein écran. C'est
         // exactement là qu'un interligne serré nuit, parce que la vision
         // périphérique distingue mal des lignes qui se touchent.
+        //
+        // Mesuré : à taille 34, la boîte d'une ligne passe de 37 px (1,1) à
+        // 44 px (1,3) — Flutter applique le multiplicateur à CHAQUE ligne,
+        // seule ou non, ce qui grossirait chaque carte d'environ 18 %.
+        // Compensé au niveau de l'arbre par un TextHeightBehavior
+        // (applyHeightToFirstAscent: false, applyHeightToLastDescent: false)
+        // posé dans MaterialApp.builder — voir app.dart. Sans lui, ce 1,3
+        // coûte un contact visible par écran.
         height: 1.3,
       );
 
