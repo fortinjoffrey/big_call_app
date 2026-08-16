@@ -46,19 +46,25 @@ class ContactCard extends StatelessWidget {
     return Row(
       children: [
         Expanded(
-          child: GestureDetector(
-            // La zone tactile doit couvrir toute la largeur, pas seulement
-            // les lettres : viser en périphérie, c'est poser le doigt à côté
-            // du mot. L'Expanded fournit déjà la largeur ; l'espacement visuel
-            // avant le bouton est du padding *à l'intérieur* du détecteur (et
-            // non un SizedBox voisin), pour qu'aucun pixel entre le mot et le
-            // rond vert ne reste sourd au toucher. `opaque` la rend sensible
-            // partout, y compris sur ce padding.
-            behavior: HitTestBehavior.opaque,
-            onTap: () => onSpeak(contact.displayName),
-            child: Padding(
-              padding: const EdgeInsets.only(right: 10),
-              child: Text(contact.displayName, style: theme.textTheme.displayLarge),
+          // `button: true` sans `label` : on conserve le texte lu par le lecteur
+          // d'écran et on ajoute seulement l'information « ceci réagit au
+          // toucher », que le bouton vert porte déjà de son côté.
+          child: Semantics(
+            button: true,
+            child: GestureDetector(
+              // La zone tactile doit couvrir toute la largeur, pas seulement
+              // les lettres : viser en périphérie, c'est poser le doigt à côté
+              // du mot. L'Expanded fournit déjà la largeur ; l'espacement visuel
+              // avant le bouton est du padding *à l'intérieur* du détecteur (et
+              // non un SizedBox voisin), pour qu'aucun pixel entre le mot et le
+              // rond vert ne reste sourd au toucher. `opaque` la rend sensible
+              // partout, y compris sur ce padding.
+              behavior: HitTestBehavior.opaque,
+              onTap: () => onSpeak(contact.displayName),
+              child: Padding(
+                padding: const EdgeInsets.only(right: 10),
+                child: Text(contact.displayName, style: theme.textTheme.displayLarge),
+              ),
             ),
           ),
         ),
@@ -75,15 +81,18 @@ class ContactCard extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        GestureDetector(
-          // Pas d'Expanded ici : la Column ne contraint pas la largeur, donc
-          // le détecteur épouse le mot. Le SizedBox l'élargit à toute la
-          // ligne, `opaque` la rend sensible partout.
-          behavior: HitTestBehavior.opaque,
-          onTap: () => onSpeak(contact.displayName),
-          child: SizedBox(
-            width: double.infinity,
-            child: Text(contact.displayName, style: theme.textTheme.displayLarge),
+        Semantics(
+          button: true,
+          child: GestureDetector(
+            // Pas d'Expanded ici : la Column ne contraint pas la largeur, donc
+            // le détecteur épouse le mot. Le SizedBox l'élargit à toute la
+            // ligne, `opaque` la rend sensible partout.
+            behavior: HitTestBehavior.opaque,
+            onTap: () => onSpeak(contact.displayName),
+            child: SizedBox(
+              width: double.infinity,
+              child: Text(contact.displayName, style: theme.textTheme.displayLarge),
+            ),
           ),
         ),
         for (final number in contact.numbers)
@@ -92,17 +101,20 @@ class ContactCard extends StatelessWidget {
             child: Row(
               children: [
                 Expanded(
-                  child: GestureDetector(
-                    // Même raisonnement que pour le nom en ligne unique :
-                    // l'espacement avant le bouton est un padding interne au
-                    // détecteur, pas un SizedBox voisin, pour rester sensible
-                    // jusqu'au bord du bouton.
-                    behavior: HitTestBehavior.opaque,
-                    onTap: () =>
-                        onSpeak('${contact.displayName} ${number.label}'),
-                    child: Padding(
-                      padding: const EdgeInsets.only(right: 10),
-                      child: Text(number.label, style: theme.textTheme.titleLarge),
+                  child: Semantics(
+                    button: true,
+                    child: GestureDetector(
+                      // Même raisonnement que pour le nom en ligne unique :
+                      // l'espacement avant le bouton est un padding interne au
+                      // détecteur, pas un SizedBox voisin, pour rester sensible
+                      // jusqu'au bord du bouton.
+                      behavior: HitTestBehavior.opaque,
+                      onTap: () =>
+                          onSpeak('${contact.displayName} ${number.label}'),
+                      child: Padding(
+                        padding: const EdgeInsets.only(right: 10),
+                        child: Text(number.label, style: theme.textTheme.titleLarge),
+                      ),
                     ),
                   ),
                 ),

@@ -3,6 +3,11 @@ import 'package:big_call_app/domain/entities/app_settings.dart';
 import 'package:flutter/material.dart';
 
 /// 72 px : le double du minimum tactile recommandé par Android. Délibéré.
+///
+/// Volontairement fixe, y compris au palier XL : la cible dépasse déjà
+/// largement tous les seuils d'accessibilité, et l'agrandir coûterait de la
+/// densité de liste — donc du défilement, le geste le plus coûteux pour elle.
+/// Ne pas la brancher sur le multiplicateur de taille de texte.
 const double kCallButtonSize = 72;
 
 class CallButton extends StatelessWidget {
