@@ -16,7 +16,11 @@ ThemeData buildTheme(AppPalette palette, TextSize size) {
         fontSize: base * scale,
         fontWeight: weight,
         color: color,
-        height: 1.1,
+        // 1,3 et non 1,1 : l'interligne ne compte que sur du texte qui se
+        // replie — un nom long au palier XL, un message plein écran. C'est
+        // exactement là qu'un interligne serré nuit, parce que la vision
+        // périphérique distingue mal des lignes qui se touchent.
+        height: 1.3,
       );
 
   return ThemeData(
