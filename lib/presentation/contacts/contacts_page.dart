@@ -71,7 +71,8 @@ class ContactsPage extends StatelessWidget {
     final children = <Widget>[
       if (state.showFavoritesSection) ...[
         SectionHeader(
-          title: '★ Favoris',
+          title: 'Favoris',
+          icon: Icons.star,
           palette: palette,
           onLongPress: () => _openSettings(context),
         ),

@@ -1,4 +1,5 @@
 import 'package:big_call_app/core/theme/app_palettes.dart';
+import 'package:big_call_app/core/theme/text_sizes.dart';
 import 'package:big_call_app/domain/entities/app_settings.dart';
 import 'package:flutter/material.dart';
 
@@ -6,12 +7,17 @@ class SectionHeader extends StatelessWidget {
   const SectionHeader({
     required this.title,
     required this.palette,
+    this.icon,
     this.onLongPress,
     super.key,
   });
 
   final String title;
   final AppPalette palette;
+
+  /// Décoration à côté du libellé — ne suit pas le palier M/L/XL, ce n'est
+  /// pas une cible de lecture.
+  final IconData? icon;
 
   /// Appui long : seul accès aux réglages. Un geste qu'on ne fait jamais
   /// par accident, donc pas d'atterrissage involontaire dans les réglages.
@@ -27,9 +33,17 @@ class SectionHeader extends StatelessWidget {
         width: double.infinity,
         color: colors.header,
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-        child: Text(
-          title.toUpperCase(),
-          style: Theme.of(context).textTheme.labelLarge,
+        child: Row(
+          children: [
+            if (icon != null) ...[
+              Icon(icon, size: kHeaderBaseSize * 1.4, color: colors.onHeader),
+              const SizedBox(width: 8),
+            ],
+            Text(
+              title.toUpperCase(),
+              style: Theme.of(context).textTheme.labelLarge,
+            ),
+          ],
         ),
       ),
     );

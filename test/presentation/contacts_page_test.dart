@@ -66,7 +66,7 @@ void main() {
 
     await tester.pumpWidget(host());
 
-    expect(find.text('★ FAVORIS'), findsOneWidget);
+    expect(find.text('FAVORIS'), findsOneWidget);
     expect(find.text('TOUS LES CONTACTS'), findsOneWidget);
   });
 
@@ -80,7 +80,7 @@ void main() {
     ));
 
     await tester.pumpWidget(host());
-    await tester.longPress(find.text('★ FAVORIS'));
+    await tester.longPress(find.text('FAVORIS'));
     await tester.pumpAndSettle();
 
     expect(find.byType(SettingsPage), findsOneWidget);
@@ -97,7 +97,7 @@ void main() {
 
     await tester.pumpWidget(host());
 
-    expect(find.text('★ FAVORIS'), findsNothing);
+    expect(find.text('FAVORIS'), findsNothing);
     expect(find.text('TOUS LES CONTACTS'), findsOneWidget);
   });
 
