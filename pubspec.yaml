@@ -52,6 +52,7 @@ dev_dependencies:
   # publiées sont incompatibles entre elles.
   build_runner: ^2.15.1
   freezed: ^3.2.5
+  flutter_launcher_icons: ^0.14.4
   bloc_test: ^10.0.0
   mocktail: ^1.0.5
 
@@ -67,3 +68,17 @@ flutter:
         - asset: assets/fonts/AtkinsonHyperlegible-Regular.ttf
         - asset: assets/fonts/AtkinsonHyperlegible-Bold.ttf
           weight: 700
+
+# Icône de l'application : combiné noir sur fond jaune saturé.
+# Le jaune ressort mieux que l'orange en vision périphérique (10,9:1 contre
+# le noir, là où du blanc sur orange ne donnerait que 3,1) et se distingue
+# nettement des icônes système — le téléphone d'Android est vert, les
+# contacts bleus. Régénérer avec :
+#   fvm dart run flutter_launcher_icons
+flutter_launcher_icons:
+  image_path: "assets/icon/app_icon.png"
+  android: true
+  ios: true
+  remove_alpha_ios: true
+  adaptive_icon_background: "#FFC107"
+  adaptive_icon_foreground: "assets/icon/app_icon_foreground.png"
