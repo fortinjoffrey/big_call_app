@@ -45,11 +45,17 @@ class SettingsPage extends StatelessWidget {
               const SizedBox(height: 8),
               // L'aperçu utilise le vrai widget : ce qu'on voit ici est
               // exactement ce que la liste affichera.
-              ContactCard(
-                contact: _previewContact,
-                palette: settings.palette,
-                onSpeak: (_) {},
-                onCall: (_) {},
+              // `IgnorePointer` : sans lui, le bouton vert de l'aperçu réagit
+              // au toucher (ondulation de l'InkWell) sans rien déclencher. Un
+              // retour visuel suivi de rien se lit comme une panne, pas comme
+              // un aperçu. Mieux vaut qu'il ne réagisse pas du tout.
+              IgnorePointer(
+                child: ContactCard(
+                  contact: _previewContact,
+                  palette: settings.palette,
+                  onSpeak: (_) {},
+                  onCall: (_) {},
+                ),
               ),
               const SizedBox(height: 28),
               Text('Thème', style: theme.textTheme.titleLarge),

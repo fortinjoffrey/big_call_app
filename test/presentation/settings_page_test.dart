@@ -1,5 +1,8 @@
+import 'package:big_call_app/core/theme/app_palettes.dart';
 import 'package:big_call_app/core/theme/app_theme.dart';
+import 'package:big_call_app/core/theme/text_sizes.dart';
 import 'package:big_call_app/domain/entities/app_settings.dart';
+import 'package:big_call_app/presentation/contacts/widgets/contact_card.dart';
 import 'package:big_call_app/presentation/settings/settings_bloc.dart';
 import 'package:big_call_app/presentation/settings/settings_event.dart';
 import 'package:big_call_app/presentation/settings/settings_page.dart';
@@ -70,5 +73,29 @@ void main() {
 
     expect(find.text('Marie'), findsOneWidget);
     expect(find.text('Mobile'), findsOneWidget);
+  });
+
+  testWidgets('l apercu reflete le theme et le palier choisis', (tester) async {
+    useTallSurface(tester);
+    when(() => bloc.state).thenReturn(
+      const AppSettings(palette: AppPalette.dark, textSize: TextSize.xl),
+    );
+
+    await tester.pumpWidget(MaterialApp(
+      theme: buildTheme(AppPalette.dark, TextSize.xl),
+      home: BlocProvider<SettingsBloc>.value(
+        value: bloc,
+        child: const SettingsPage(),
+      ),
+    ));
+
+    // L'aperçu n'existe que pour montrer l'effet avant de s'engager : une
+    // carte figée sur la palette claire passerait les quatre autres tests.
+    final card = tester.widget<ContactCard>(find.byType(ContactCard));
+    expect(card.palette, AppPalette.dark);
+
+    final name = tester.widget<Text>(find.text('Marie'));
+    expect(name.style?.color, paletteColors[AppPalette.dark]!.onBackground);
+    expect(name.style?.fontSize, kNameBaseSize * 1.5);
   });
 }
