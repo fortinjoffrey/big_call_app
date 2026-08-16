@@ -56,6 +56,42 @@ void main() {
         reason: 'un appui sur le bouton ne doit pas remonter a la zone parole');
   });
 
+  testWidgets('toucher a droite du nom, dans le vide, prononce quand meme',
+      (tester) async {
+    final spoken = <String>[];
+    await tester.pumpWidget(host(onSpeak: spoken.add, onCall: (_) {}));
+
+    final nameRect = tester.getRect(find.text('Marie'));
+    // Repère la largeur réelle disponible pour la ligne du nom via la ligne
+    // libellé + bouton juste en dessous (même largeur de contenu, bornée par
+    // le padding de la carte) plutôt que le rectangle externe de la carte :
+    // ce dernier inclut la marge/le padding de la carte, une marge de
+    // respiration voulue entre cartes, pas la ligne elle-même.
+    final rowRect = tester
+        .getRect(find.ancestor(of: find.text('Mobile'), matching: find.byType(Row)).first);
+    // 10 px avant le bord : nettement au-delà de la largeur du mot « Marie »
+    // (le nom ne remplit jamais toute la ligne), donc bien dans le vide situé
+    // à droite du prénom, tout en restant dans la zone tactile élargie.
+    final x = rowRect.right - 10;
+    await tester.tapAt(Offset(x, nameRect.center.dy));
+
+    expect(spoken, ['Marie']);
+  });
+
+  testWidgets('toucher a droite d un libelle prononce quand meme',
+      (tester) async {
+    final spoken = <String>[];
+    await tester.pumpWidget(host(onSpeak: spoken.add, onCall: (_) {}));
+
+    final labelRect = tester.getRect(find.text('Mobile'));
+    final buttonRect = tester.getRect(find.byType(CallButton).first);
+    // Entre la fin du libellé et le bouton vert, sans toucher le bouton.
+    final x = (labelRect.right + buttonRect.left) / 2;
+    await tester.tapAt(Offset(x, labelRect.center.dy));
+
+    expect(spoken, ['Marie Mobile']);
+  });
+
   testWidgets('le bouton mesure au moins 72 px', (tester) async {
     await tester.pumpWidget(host(onSpeak: (_) {}, onCall: (_) {}));
 
