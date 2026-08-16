@@ -132,16 +132,16 @@ void main() {
     verify(() => bloc.add(const UppercaseNamesSelected(false))).called(1);
   });
 
-  testWidgets('affiche un apercu par section, avec le vrai widget de carte',
+  testWidgets(
+      'affiche un apercu unique en haut de page, avec le vrai widget de carte',
       (tester) async {
     useTallSurface(tester);
     await tester.pumpWidget(host());
 
-    // Cinq sections, cinq aperçus : un pour chaque groupe de réglages.
-    expect(find.byType(ContactCard), findsNWidgets(5));
-    expect(find.text('Marie'), findsNWidgets(4));
-    // Seule la section « Numéros d'urgence » a besoin d'un numéro
-    // d'urgence pour montrer le bouton rouge.
+    // Un seul aperçu : deux cartes, un contact ordinaire et un numéro
+    // d'urgence, plus aucun aperçu répété section par section.
+    expect(find.byType(ContactCard), findsNWidgets(2));
+    expect(find.text('Marie'), findsOneWidget);
     expect(find.text('SAMU'), findsOneWidget);
   });
 

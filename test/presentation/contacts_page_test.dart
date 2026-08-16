@@ -72,7 +72,7 @@ void main() {
     await tester.pumpWidget(host());
 
     expect(find.text('FAVORIS'), findsOneWidget);
-    expect(find.text('TOUS LES CONTACTS'), findsOneWidget);
+    expect(find.text('AUTRES CONTACTS'), findsOneWidget);
   });
 
   testWidgets('avec section favoris, l appui long sur son en-tete ouvre les reglages',
@@ -92,7 +92,7 @@ void main() {
   });
 
   testWidgets(
-      'style section : la section URGENCE se place entre FAVORIS et TOUS LES CONTACTS',
+      'style section : la section URGENCE se place entre FAVORIS et AUTRES CONTACTS',
       (tester) async {
     useTallSurface(tester);
     when(() => bloc.state).thenReturn(const ContactsReady(
@@ -106,7 +106,7 @@ void main() {
     final favorisHeaderY = tester.getTopLeft(find.text('FAVORIS')).dy;
     final urgenceHeaderY = tester.getTopLeft(find.text('URGENCE')).dy;
     final allContactsHeaderY =
-        tester.getTopLeft(find.text('TOUS LES CONTACTS')).dy;
+        tester.getTopLeft(find.text('AUTRES CONTACTS')).dy;
 
     expect(find.text('URGENCE'), findsOneWidget);
     expect(urgenceHeaderY, greaterThan(favorisHeaderY));
@@ -128,7 +128,7 @@ void main() {
     final urgenceHeaderY = tester.getTopLeft(find.text('URGENCE')).dy;
     final samuY = tester.getTopLeft(find.text('SAMU')).dy;
     final allContactsHeaderY =
-        tester.getTopLeft(find.text('TOUS LES CONTACTS')).dy;
+        tester.getTopLeft(find.text('AUTRES CONTACTS')).dy;
 
     expect(samuY, greaterThan(urgenceHeaderY));
     expect(samuY, lessThan(allContactsHeaderY));
@@ -178,7 +178,7 @@ void main() {
     await tester.pumpWidget(host());
 
     expect(find.text('FAVORIS'), findsNothing);
-    expect(find.text('TOUS LES CONTACTS'), findsOneWidget);
+    expect(find.text('AUTRES CONTACTS'), findsOneWidget);
   });
 
   testWidgets('sans section favoris, l appui long sur l autre en-tete ouvre les reglages',
@@ -193,7 +193,7 @@ void main() {
     await tester.pumpWidget(host());
     // Sur iOS la section « Favoris » n'existe pas : si l'appui long restait
     // attaché à son en-tête, les réglages deviendraient inatteignables.
-    await tester.longPress(find.text('TOUS LES CONTACTS'));
+    await tester.longPress(find.text('AUTRES CONTACTS'));
     await tester.pumpAndSettle();
 
     expect(find.byType(SettingsPage), findsOneWidget);

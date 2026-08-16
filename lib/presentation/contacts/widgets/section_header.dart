@@ -38,7 +38,7 @@ class SectionHeader extends StatelessWidget {
       child: Container(
         width: double.infinity,
         color: colors.header,
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 16),
         child: Row(
           children: [
             if (icon != null) ...[

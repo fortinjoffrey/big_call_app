@@ -98,34 +98,51 @@ class ContactsPage extends StatelessWidget {
         ? [...emergencyAmong(state.favorites), ...emergencyAmong(state.others)]
         : const <PhoneContact>[];
 
+    // Chaque section n'apparaît pas forcément à l'écran (favoris masqués sur
+    // iOS, urgence absente hors du style « section ») : l'ordre réel n'est
+    // donc connu qu'une fois ce filtrage fait. On construit chaque section
+    // sous forme de liste de widgets, puis on insère l'espacement entre les
+    // sections effectivement présentes plutôt que de le coder en dur.
+    final sections = <List<Widget>>[
+      if (state.showFavoritesSection)
+        [
+          SectionHeader(
+            title: 'Favoris',
+            icon: Icons.star,
+            palette: palette,
+            onLongPress: () => _openSettings(context),
+          ),
+          ...favorites.map(card),
+        ],
+      if (emergency.isNotEmpty)
+        [
+          SectionHeader(
+            title: 'Urgence',
+            icon: Icons.phone,
+            iconColor: paletteColors[palette]!.emergency,
+            palette: palette,
+          ),
+          ...emergency.map(card),
+        ],
+      [
+        SectionHeader(
+          title: 'Autres contacts',
+          palette: palette,
+          // Sur iOS la section « Favoris » est masquée : l'appui long doit
+          // rester atteignable, il passe donc sur cet en-tête.
+          onLongPress: state.showFavoritesSection
+              ? null
+              : () => _openSettings(context),
+        ),
+        ...others.map(card),
+      ],
+    ];
+
     final children = <Widget>[
-      if (state.showFavoritesSection) ...[
-        SectionHeader(
-          title: 'Favoris',
-          icon: Icons.star,
-          palette: palette,
-          onLongPress: () => _openSettings(context),
-        ),
-        ...favorites.map(card),
+      for (var i = 0; i < sections.length; i++) ...[
+        if (i > 0) const SizedBox(height: 20),
+        ...sections[i],
       ],
-      if (emergency.isNotEmpty) ...[
-        SectionHeader(
-          title: 'Urgence',
-          icon: Icons.phone,
-          iconColor: paletteColors[palette]!.emergency,
-          palette: palette,
-        ),
-        ...emergency.map(card),
-      ],
-      SectionHeader(
-        title: 'Tous les contacts',
-        palette: palette,
-        // Sur iOS la section « Favoris » est masquée : l'appui long doit
-        // rester atteignable, il passe donc sur cet en-tête.
-        onLongPress:
-            state.showFavoritesSection ? null : () => _openSettings(context),
-      ),
-      ...others.map(card),
     ];
 
     return ListView.builder(

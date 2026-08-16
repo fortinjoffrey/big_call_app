@@ -2,7 +2,7 @@
 /// d'accessibilité système d'Android — qui s'ajoute automatiquement par-dessus.
 const double kNameBaseSize = 34;
 const double kLabelBaseSize = 24;
-const double kHeaderBaseSize = 15;
+const double kHeaderBaseSize = 20;
 
 /// Plafond global : empêche un téléphone déjà réglé au maximum de faire
 /// déborder « Anne-Marie » hors de sa carte.

@@ -50,10 +50,11 @@ class SettingsPage extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              _Preview(settings: settings),
+              const SizedBox(height: 20),
               _Section(
                 title: 'Thème',
                 palette: settings.palette,
-                preview: _preview(settings),
                 tiles: [
                   for (final palette in AppPalette.values)
                     _ChoiceTile(
@@ -69,7 +70,6 @@ class SettingsPage extends StatelessWidget {
               _Section(
                 title: 'Taille du texte',
                 palette: settings.palette,
-                preview: _preview(settings),
                 tiles: [
                   for (final size in TextSize.values)
                     _ChoiceTile(
@@ -85,7 +85,6 @@ class SettingsPage extends StatelessWidget {
               _Section(
                 title: 'Nom des contacts',
                 palette: settings.palette,
-                preview: _preview(settings),
                 tiles: [
                   _ChoiceTile(
                     label: 'MAJUSCULES',
@@ -108,7 +107,6 @@ class SettingsPage extends StatelessWidget {
               _Section(
                 title: 'Disposition',
                 palette: settings.palette,
-                preview: _preview(settings),
                 tiles: [
                   for (final layout in ContactLayout.values)
                     _ChoiceTile(
@@ -124,7 +122,6 @@ class SettingsPage extends StatelessWidget {
               _Section(
                 title: "Numéros d'urgence",
                 palette: settings.palette,
-                preview: _preview(settings, emergency: true),
                 isLast: true,
                 tiles: [
                   for (final style in EmergencyStyle.values)
@@ -145,12 +142,39 @@ class SettingsPage extends StatelessWidget {
     );
   }
 
+}
+
+/// Aperçu unique en haut de page : un contact ordinaire (bouton vert) et un
+/// numéro d'urgence (bouton rouge selon le style choisi), pour remplacer les
+/// cinq aperçus quasi identiques d'avant — quatre d'entre eux ne montraient
+/// jamais que le bouton vert.
+///
+/// Empilées plutôt que côte à côte : au palier XL, deux colonnes ne
+/// laissent plus assez de largeur pour « Marie » ou « SAMU », qui se
+/// retrouvent alors coupés lettre par lettre.
+class _Preview extends StatelessWidget {
+  const _Preview({required this.settings});
+
+  final AppSettings settings;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        _previewCard(settings, emergency: false),
+        const SizedBox(height: 12),
+        _previewCard(settings, emergency: true),
+      ],
+    );
+  }
+
   // L'aperçu utilise le vrai widget : ce qu'on voit ici est exactement ce
   // que la liste affichera. `IgnorePointer` : sans lui, le bouton vert de
   // l'aperçu réagit au toucher (ondulation de l'InkWell) sans rien
   // déclencher. Un retour visuel suivi de rien se lit comme une panne, pas
   // comme un aperçu. Mieux vaut qu'il ne réagisse pas du tout.
-  Widget _preview(AppSettings settings, {bool emergency = false}) {
+  Widget _previewCard(AppSettings settings, {required bool emergency}) {
     return IgnorePointer(
       child: ContactCard(
         contact: emergency ? _previewEmergencyContact : _previewContact,
@@ -170,20 +194,18 @@ class SettingsPage extends StatelessWidget {
 }
 
 /// Un bloc par réglage : titre repris de la liste des contacts, bordure
-/// franche (jamais d'ombre), aperçu réel puis contrôles. Sépare visuellement
-/// les cinq sections les unes des autres.
+/// franche (jamais d'ombre), puis contrôles. Sépare visuellement les cinq
+/// sections les unes des autres.
 class _Section extends StatelessWidget {
   const _Section({
     required this.title,
     required this.palette,
-    required this.preview,
     required this.tiles,
     this.isLast = false,
   });
 
   final String title;
   final AppPalette palette;
-  final Widget preview;
   final List<Widget> tiles;
   final bool isLast;
 
@@ -207,11 +229,7 @@ class _Section extends StatelessWidget {
               padding: const EdgeInsets.all(12),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  preview,
-                  const SizedBox(height: 16),
-                  ...tiles,
-                ],
+                children: tiles,
               ),
             ),
           ],
