@@ -13,6 +13,9 @@ class ContactMapper {
 
     final name = (contact.displayName ?? '').trim();
     return PhoneContact(
+      // Un contact sans identifiant retombe sur la chaîne vide : ils se
+      // confondraient donc entre eux. Sans conséquence tant que l'id ne sert
+      // pas de Key de widget — ce qui n'est pas le cas aujourd'hui.
       id: contact.id ?? '',
       displayName: name.isEmpty ? 'Sans nom' : name,
       isFavorite: contact.android?.isFavorite ?? false,
@@ -35,6 +38,8 @@ class ContactMapper {
       fc.PhoneLabel.work => 'Bureau',
       fc.PhoneLabel.main => 'Principal',
       fc.PhoneLabel.workMobile => 'Mobile bureau',
+      fc.PhoneLabel.iPhone => 'Mobile',
+      fc.PhoneLabel.companyMain => 'Standard',
       fc.PhoneLabel.homeFax ||
       fc.PhoneLabel.workFax ||
       fc.PhoneLabel.otherFax => 'Fax',

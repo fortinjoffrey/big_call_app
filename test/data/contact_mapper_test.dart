@@ -46,6 +46,24 @@ void main() {
     );
   });
 
+  test('traduit iPhone et companyMain', () {
+    expect(
+      mapper.labelFor(
+        fc.Phone(number: '1', label: const fc.Label(fc.PhoneLabel.iPhone)),
+      ),
+      'Mobile',
+    );
+    expect(
+      mapper.labelFor(
+        fc.Phone(
+          number: '1',
+          label: const fc.Label(fc.PhoneLabel.companyMain),
+        ),
+      ),
+      'Standard',
+    );
+  });
+
   test('conserve un libelle personnalise saisi par l utilisateur', () {
     final phone = fc.Phone(
       number: '1',
@@ -58,6 +76,22 @@ void main() {
     final phone = fc.Phone(
       number: '1',
       label: const fc.Label(fc.PhoneLabel.custom, ''),
+    );
+    expect(mapper.labelFor(phone), 'Autre');
+  });
+
+  test('retombe sur Autre quand le libelle personnalise est nul', () {
+    final phone = fc.Phone(
+      number: '1',
+      label: const fc.Label(fc.PhoneLabel.custom),
+    );
+    expect(mapper.labelFor(phone), 'Autre');
+  });
+
+  test('retombe sur Autre quand le libelle personnalise n est que des espaces', () {
+    final phone = fc.Phone(
+      number: '1',
+      label: const fc.Label(fc.PhoneLabel.custom, '   '),
     );
     expect(mapper.labelFor(phone), 'Autre');
   });
