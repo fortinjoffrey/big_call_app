@@ -56,6 +56,11 @@ void main() {
         expect(contrastRatio(colors.emergency, colors.background),
             greaterThanOrEqualTo(3.0));
       });
+
+      test('icone rouge de la section urgence sur son bandeau >= 3:1', () {
+        expect(contrastRatio(colors.emergency, colors.header),
+            greaterThanOrEqualTo(3.0));
+      });
     });
   }
 }

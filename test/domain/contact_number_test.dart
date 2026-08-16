@@ -8,9 +8,14 @@ void main() {
     expect(const ContactNumber(number: '18', label: 'Fixe').isEmergency, isTrue);
   });
 
+  test('le 112 europeen est reconnu', () {
+    expect(const ContactNumber(number: '112', label: 'Fixe').isEmergency, isTrue);
+  });
+
   test('un numero d urgence ecrit avec des separateurs est reconnu', () {
     expect(const ContactNumber(number: '1 5', label: 'Fixe').isEmergency, isTrue);
     expect(const ContactNumber(number: '1-5', label: 'Fixe').isEmergency, isTrue);
+    expect(const ContactNumber(number: '1 1 2', label: 'Fixe').isEmergency, isTrue);
   });
 
   test('un numero ordinaire n est pas reconnu comme numero d urgence', () {
@@ -18,9 +23,5 @@ void main() {
       const ContactNumber(number: '0611223344', label: 'Mobile').isEmergency,
       isFalse,
     );
-  });
-
-  test('le 112 n est volontairement pas reconnu', () {
-    expect(const ContactNumber(number: '112', label: 'Fixe').isEmergency, isFalse);
   });
 }

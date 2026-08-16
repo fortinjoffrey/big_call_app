@@ -108,7 +108,8 @@ class ContactsPage extends StatelessWidget {
       if (emergency.isNotEmpty) ...[
         SectionHeader(
           title: 'Urgence',
-          icon: Icons.local_hospital,
+          icon: Icons.phone,
+          iconColor: paletteColors[palette]!.emergency,
           palette: palette,
         ),
         ...emergency.map(card),

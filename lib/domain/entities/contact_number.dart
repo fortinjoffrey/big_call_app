@@ -2,9 +2,8 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'contact_number.freezed.dart';
 
-/// Numéros d'urgence français reconnus. Le 112 (urgence européenne) n'y est
-/// volontairement pas : il suffit de l'ajouter ici pour qu'il le devienne.
-const kEmergencyNumbers = {'15', '17', '18'};
+/// Numéros d'urgence français reconnus, plus le 112 européen.
+const kEmergencyNumbers = {'15', '17', '18', '112'};
 
 @freezed
 abstract class ContactNumber with _$ContactNumber {
