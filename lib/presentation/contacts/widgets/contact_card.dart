@@ -113,7 +113,11 @@ class ContactCard extends StatelessWidget {
                           onSpeak('${contact.displayName} ${number.label}'),
                       child: Padding(
                         padding: const EdgeInsets.only(right: 10),
-                        child: Text(number.label, style: theme.textTheme.titleLarge),
+                        child: Text(
+                          number.label,
+                          textAlign: TextAlign.right,
+                          style: theme.textTheme.titleLarge,
+                        ),
                       ),
                     ),
                   ),

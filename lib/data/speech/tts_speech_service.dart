@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:big_call_app/domain/ports/speech_service.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_tts/flutter_tts.dart';
@@ -9,15 +7,18 @@ class TtsSpeechService implements SpeechService {
 
   final FlutterTts _tts;
 
-  /// Les deux plateformes n'utilisent pas la même échelle : Android va de 0 à
-  /// ~2 avec 1,0 pour « normal », iOS de 0 à 1 avec ~0,5 pour « normal ». Une
-  /// constante unique donnerait donc deux vitesses très différentes.
+  /// Android : le plugin multiplie la valeur par deux avant de la passer au
+  /// moteur (`setSpeechRate(rate * 2.0f)` dans FlutterTtsPlugin.kt), dont la
+  /// vitesse normale est 1,0. Passer 0,5 donne donc exactement la vitesse
+  /// standard. Une valeur de 0,85 — qui paraissait « 15 % sous la normale » —
+  /// arrivait en réalité à 1,7, soit 70 % trop rapide, ce qui s'entendait
+  /// nettement sur un vrai téléphone.
   ///
-  /// Environ 15 % sous la normale de chaque plateforme. Ralentir davantage est
-  /// contre-productif : très étirée, une phrase se comprend moins bien, pas
-  /// mieux — les mots s'espacent au point qu'elle ne tient plus en mémoire.
-  /// Valeur à affiner à l'oreille lors de l'essai avec l'utilisatrice.
-  static final double _speechRate = Platform.isIOS ? 0.42 : 0.85;
+  /// iOS : `AVSpeechUtterance` va de 0 à 1 avec ~0,5 pour « normal » ; le
+  /// plugin transmet la valeur telle quelle (`utterance.rate = rate`, sans
+  /// facteur), donc 0,5 y donne aussi exactement la vitesse standard — d'où
+  /// une constante unique pour les deux plateformes.
+  static const double _speechRate = 0.5;
 
   /// `null` tant que la configuration n'a pas été tentée, puis `true` ou
   /// `false` définitivement. Un échec est mémorisé : sans voix française
