@@ -28,6 +28,15 @@ void main() {
         expect(contrastRatio(colors.onHeader, colors.header),
             greaterThanOrEqualTo(7.0));
       });
+
+      test('pastille verte sur fond >= 3:1 (cible tactile)', () {
+        // Le bouton est la seule cible qu'elle doit viser : le disque lui-même
+        // doit se détacher du fond, pas seulement l'icône qu'il contient.
+        // Contrainte opposée à celle de l'icône — assombrir le vert améliore
+        // l'une et dégrade l'autre, d'où l'intérêt de tester les deux.
+        expect(contrastRatio(colors.button, colors.background),
+            greaterThanOrEqualTo(3.0));
+      });
     });
   }
 }
