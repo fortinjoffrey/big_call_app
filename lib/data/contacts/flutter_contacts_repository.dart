@@ -37,7 +37,12 @@ class FlutterContactsRepository implements ContactRepository {
         if (mapped != null) contacts.add(mapped);
       }
       return Ok(contacts);
-    } on Exception catch (error) {
+    } on Object catch (error) {
+      // `Object` et non `Exception` : le plugin décode du JSON venu du natif,
+      // une Error de conversion de type échapperait à `on Exception` et
+      // planterait l'app au démarrage — écran noir, chez quelqu'un qui ne peut
+      // ni le comprendre ni le rapporter. La lecture est pure, il n'y a aucun
+      // état à corrompre, donc rattraper large ne coûte rien ici.
       return Err(Failure.unknown(error.toString()));
     }
   }
