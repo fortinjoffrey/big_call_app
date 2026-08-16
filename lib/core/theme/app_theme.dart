@@ -35,6 +35,11 @@ ThemeData buildTheme(AppPalette palette, TextSize size) {
     useMaterial3: true,
     fontFamily: kFontFamily,
     scaffoldBackgroundColor: colors.background,
+    // Attention : fromSeed dérive une trentaine de rôles depuis la graine et
+    // seuls les quatre surchargés ci-dessous sont passés par les assertions de
+    // contraste. Ne pas consommer les autres (`error`, `outline`,
+    // `surfaceContainerHighest`…) dans un widget : ce serait afficher une
+    // couleur que rien ne vérifie, à quelqu'un qui a besoin de 7:1 partout.
     colorScheme: ColorScheme.fromSeed(
       seedColor: colors.button,
       brightness:
@@ -44,6 +49,10 @@ ThemeData buildTheme(AppPalette palette, TextSize size) {
       primary: colors.button,
       onPrimary: colors.onButton,
     ),
+    // Seuls ces trois emplacements sont remplis. Tout widget Material qui
+    // utiliserait `bodyMedium`, `titleMedium` ou un autre slot retomberait sur
+    // les tailles Material par défaut — du petit texte, dans une app qui ne
+    // doit jamais en afficher. Les widgets ne doivent lire que ces trois-là.
     textTheme: TextTheme(
       // Nom du contact
       displayLarge: style(kNameBaseSize, FontWeight.w700, colors.onBackground),

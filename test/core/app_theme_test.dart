@@ -26,4 +26,14 @@ void main() {
     final theme = buildTheme(AppPalette.light, TextSize.m);
     expect(theme.textTheme.displayLarge!.fontFamily, 'Atkinson Hyperlegible');
   });
+
+  test('l en-tete prend la couleur de son propre fond, pas celle du corps', () {
+    final theme = buildTheme(AppPalette.yellow, TextSize.m);
+    final colors = paletteColors[AppPalette.yellow]!;
+
+    // Piège de copier-coller : les trois styles se ressemblent, mais l'en-tête
+    // se pose sur un fond différent du reste de l'écran.
+    expect(theme.textTheme.labelLarge!.color, colors.onHeader);
+    expect(theme.textTheme.displayLarge!.color, colors.onBackground);
+  });
 }
