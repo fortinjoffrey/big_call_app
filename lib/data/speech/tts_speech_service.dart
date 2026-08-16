@@ -8,7 +8,6 @@ class TtsSpeechService implements SpeechService {
   TtsSpeechService(this._tts);
 
   final FlutterTts _tts;
-  bool _configured = false;
 
   /// Les deux plateformes n'utilisent pas la même échelle : Android va de 0 à
   /// ~2 avec 1,0 pour « normal », iOS de 0 à 1 avec ~0,5 pour « normal ». Une
@@ -20,12 +19,26 @@ class TtsSpeechService implements SpeechService {
   /// Valeur à affiner à l'oreille lors de l'essai avec l'utilisatrice.
   static final double _speechRate = Platform.isIOS ? 0.42 : 0.85;
 
-  Future<void> _configure() async {
-    if (_configured) return;
-    await _tts.setLanguage('fr-FR');
-    await _tts.setSpeechRate(_speechRate);
-    await _tts.awaitSpeakCompletion(true);
-    _configured = true;
+  /// `null` tant que la configuration n'a pas été tentée, puis `true` ou
+  /// `false` définitivement. Un échec est mémorisé : sans voix française
+  /// installée, réessayer à chaque phrase ajouterait de la latence à chaque
+  /// appui pour un résultat qui restera muet, et noierait le journal.
+  bool? _configured;
+
+  Future<bool> _configure() async {
+    final known = _configured;
+    if (known != null) return known;
+
+    try {
+      await _tts.setLanguage('fr-FR');
+      await _tts.setSpeechRate(_speechRate);
+      await _tts.awaitSpeakCompletion(true);
+      _configured = true;
+    } on Object catch (error) {
+      debugPrint('TTS configure: $error');
+      _configured = false;
+    }
+    return _configured!;
   }
 
   /// N'échoue jamais : sans voix française installée, l'app reste utilisable.
@@ -33,8 +46,8 @@ class TtsSpeechService implements SpeechService {
   /// et invisible serait introuvable.
   @override
   Future<void> speak(String text) async {
+    if (!await _configure()) return;
     try {
-      await _configure();
       await _tts.stop();
       await _tts.speak(text);
     } on Object catch (error) {
