@@ -37,6 +37,16 @@ void main() {
         expect(contrastRatio(colors.button, colors.background),
             greaterThanOrEqualTo(3.0));
       });
+
+      test('texte SAMU sur rouge >= 4.5:1 (grand texte)', () {
+        expect(contrastRatio(colors.onEmergency, colors.emergency),
+            greaterThanOrEqualTo(4.5));
+      });
+
+      test('carte SAMU sur fond >= 3:1', () {
+        expect(contrastRatio(colors.emergency, colors.background),
+            greaterThanOrEqualTo(3.0));
+      });
     });
   }
 }

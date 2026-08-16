@@ -27,6 +27,7 @@ class ContactsBloc extends Bloc<ContactsEvent, ContactsState> {
     // en croyant qu'il fait doublon.
     on<LabelSpoken>(_onSpoken, transformer: restartable());
     on<CallRequested>(_onCall);
+    on<EmergencyCallRequested>(_onEmergencyCall);
     on<CallErrorDismissed>(_onErrorDismissed);
     on<SystemSettingsRequested>(
         (event, emit) => _systemSettings.openAppSettings());
@@ -72,8 +73,19 @@ class ContactsBloc extends Bloc<ContactsEvent, ContactsState> {
     await _speech.speak(event.text);
   }
 
-  Future<void> _onCall(CallRequested event, Emitter<ContactsState> emit) async {
-    final result = await _callService.call(event.number);
+  Future<void> _onCall(CallRequested event, Emitter<ContactsState> emit) =>
+      _call(event.number, emit);
+
+  /// Le 15 (SAMU), fixe : ce n'est jamais un numéro choisi par l'appelant,
+  /// donc il ne transite pas par l'événement.
+  Future<void> _onEmergencyCall(
+    EmergencyCallRequested event,
+    Emitter<ContactsState> emit,
+  ) =>
+      _call('15', emit);
+
+  Future<void> _call(String number, Emitter<ContactsState> emit) async {
+    final result = await _callService.call(number);
     // L'erreur n'est remontée que si la liste est encore à l'écran. Un
     // rechargement concurrent la ferait disparaître — impossible aujourd'hui,
     // `ContactsRequested` n'étant émis qu'au démarrage. Si un jour l'app

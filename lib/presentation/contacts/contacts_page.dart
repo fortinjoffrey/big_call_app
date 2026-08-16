@@ -6,6 +6,7 @@ import 'package:big_call_app/presentation/contacts/contacts_bloc.dart';
 import 'package:big_call_app/presentation/contacts/contacts_event.dart';
 import 'package:big_call_app/presentation/contacts/contacts_state.dart';
 import 'package:big_call_app/presentation/contacts/widgets/contact_card.dart';
+import 'package:big_call_app/presentation/contacts/widgets/emergency_card.dart';
 import 'package:big_call_app/presentation/contacts/widgets/message_screen.dart';
 import 'package:big_call_app/presentation/contacts/widgets/section_header.dart';
 import 'package:big_call_app/presentation/settings/settings_page.dart';
@@ -80,6 +81,11 @@ class ContactsPage extends StatelessWidget {
         ),
         ...state.favorites.map(card),
       ],
+      EmergencyCard(
+        palette: palette,
+        onSpeak: () => bloc.add(const LabelSpoken('SAMU')),
+        onCall: () => bloc.add(const EmergencyCallRequested()),
+      ),
       SectionHeader(
         title: 'Tous les contacts',
         palette: palette,

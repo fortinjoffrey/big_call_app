@@ -4,6 +4,7 @@ import 'package:big_call_app/presentation/contacts/contacts_bloc.dart';
 import 'package:big_call_app/presentation/contacts/contacts_event.dart';
 import 'package:big_call_app/presentation/contacts/contacts_page.dart';
 import 'package:big_call_app/presentation/contacts/contacts_state.dart';
+import 'package:big_call_app/presentation/contacts/widgets/emergency_card.dart';
 import 'package:big_call_app/presentation/settings/settings_bloc.dart';
 import 'package:big_call_app/presentation/settings/settings_event.dart';
 import 'package:big_call_app/presentation/settings/settings_page.dart';
@@ -87,6 +88,48 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.byType(SettingsPage), findsOneWidget);
+  });
+
+  testWidgets(
+      'la carte SAMU se place sous les favoris et au dessus de TOUS LES CONTACTS',
+      (tester) async {
+    useTallSurface(tester);
+    when(() => bloc.state).thenReturn(const ContactsReady(
+      favorites: [joffrey, marie],
+      others: [anneMarie, docteur],
+      showFavoritesSection: true,
+    ));
+
+    await tester.pumpWidget(host());
+
+    final lastFavoriteY = tester.getTopLeft(find.text('Marie')).dy;
+    final emergencyY = tester.getTopLeft(find.byType(EmergencyCard)).dy;
+    final allContactsHeaderY =
+        tester.getTopLeft(find.text('TOUS LES CONTACTS')).dy;
+
+    expect(find.byType(EmergencyCard), findsOneWidget);
+    expect(emergencyY, greaterThan(lastFavoriteY));
+    expect(emergencyY, lessThan(allContactsHeaderY));
+  });
+
+  testWidgets(
+      'sans section favoris, la carte SAMU reste au dessus de TOUS LES CONTACTS',
+      (tester) async {
+    useTallSurface(tester);
+    when(() => bloc.state).thenReturn(const ContactsReady(
+      favorites: [],
+      others: [joffrey, marie],
+      showFavoritesSection: false,
+    ));
+
+    await tester.pumpWidget(host());
+
+    final emergencyY = tester.getTopLeft(find.byType(EmergencyCard)).dy;
+    final allContactsHeaderY =
+        tester.getTopLeft(find.text('TOUS LES CONTACTS')).dy;
+
+    expect(find.byType(EmergencyCard), findsOneWidget);
+    expect(emergencyY, lessThan(allContactsHeaderY));
   });
 
   testWidgets('masque la section favoris quand la plateforme ne la fournit pas',

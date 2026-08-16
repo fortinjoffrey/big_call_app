@@ -11,6 +11,8 @@ class PaletteColors {
     required this.onButton,
     required this.header,
     required this.onHeader,
+    required this.emergency,
+    required this.onEmergency,
   });
 
   final Color background;
@@ -23,12 +25,21 @@ class PaletteColors {
   final Color onButton;
   final Color header;
   final Color onHeader;
+
+  /// Rouge de la carte SAMU. Sur fond noir, aucun rouge ne peut satisfaire à
+  /// la fois >= 3:1 contre le fond ET >= 7:1 sous du texte blanc — les deux
+  /// exigences s'excluent. « SAMU » est du grand texte (seuil AAA 4,5:1), et
+  /// ce rouge satisfait les deux contraintes : blanc dessus = 4,98:1, carte
+  /// sur fond = 4,98:1 (clair) / 4,22:1 (sombre).
+  final Color emergency;
+  final Color onEmergency;
 }
 
 const _green = Color(0xFF0E7A38);
 const _white = Color(0xFFFFFFFF);
 const _black = Color(0xFF000000);
 const _yellow = Color(0xFFFFE24D);
+const _emergency = Color(0xFFD32F2F);
 
 const paletteColors = <AppPalette, PaletteColors>{
   AppPalette.light: PaletteColors(
@@ -39,6 +50,8 @@ const paletteColors = <AppPalette, PaletteColors>{
     onButton: _white,
     header: Color(0xFFE0E0E0),
     onHeader: _black,
+    emergency: _emergency,
+    onEmergency: _white,
   ),
   AppPalette.dark: PaletteColors(
     background: _black,
@@ -48,6 +61,8 @@ const paletteColors = <AppPalette, PaletteColors>{
     onButton: _white,
     header: Color(0xFF1C1C1C),
     onHeader: _white,
+    emergency: _emergency,
+    onEmergency: _white,
   ),
   AppPalette.yellow: PaletteColors(
     background: _black,
@@ -57,5 +72,7 @@ const paletteColors = <AppPalette, PaletteColors>{
     onButton: _white,
     header: Color(0xFF1C1C1C),
     onHeader: _yellow,
+    emergency: _emergency,
+    onEmergency: _white,
   ),
 };
