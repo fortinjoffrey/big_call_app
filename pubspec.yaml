@@ -46,6 +46,9 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^6.0.0
+  # 2.15.1 et non 2.16.0 : build_runner >= 2.15.2 exige analyzer >= 13.3,
+  # alors que freezed 3.2.5 exige analyzer < 11. Les deux dernières versions
+  # publiées sont incompatibles entre elles.
   build_runner: ^2.15.1
   freezed: ^3.2.5
   bloc_test: ^10.0.0
