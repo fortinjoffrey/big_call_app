@@ -37,12 +37,12 @@ class SettingsPage extends StatelessWidget {
       ),
       body: SafeArea(
         child: SingleChildScrollView(
-          padding: const EdgeInsets.all(8),
+          padding: const EdgeInsets.all(12),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text('Aperçu', style: theme.textTheme.titleLarge),
-              const SizedBox(height: 6),
+              const SizedBox(height: 8),
               // L'aperçu utilise le vrai widget : ce qu'on voit ici est
               // exactement ce que la liste affichera.
               ContactCard(
@@ -51,29 +51,20 @@ class SettingsPage extends StatelessWidget {
                 onSpeak: (_) {},
                 onCall: (_) {},
               ),
-              const SizedBox(height: 10),
+              const SizedBox(height: 28),
               Text('Thème', style: theme.textTheme.titleLarge),
-              const SizedBox(height: 2),
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  for (final palette in AppPalette.values)
-                    Expanded(
-                      child: _ChoiceTile(
-                        label: palette.label,
-                        selected: palette == settings.palette,
-                        palette: settings.palette,
-                        centered: true,
-                        onTap: () => context.read<SettingsBloc>().add(
-                          ThemeSelected(palette),
-                        ),
-                      ),
-                    ),
-                ],
-              ),
-              const SizedBox(height: 10),
+              const SizedBox(height: 8),
+              for (final palette in AppPalette.values)
+                _ChoiceTile(
+                  label: palette.label,
+                  selected: palette == settings.palette,
+                  palette: settings.palette,
+                  onTap: () =>
+                      context.read<SettingsBloc>().add(ThemeSelected(palette)),
+                ),
+              const SizedBox(height: 28),
               Text('Taille du texte', style: theme.textTheme.titleLarge),
-              const SizedBox(height: 2),
+              const SizedBox(height: 8),
               Row(
                 children: [
                   for (final size in TextSize.values)
@@ -121,11 +112,11 @@ class _ChoiceTile extends StatelessWidget {
     // La sélection se signale par l'épaisseur de la bordure et une coche,
     // jamais par une nuance de couleur seule.
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 3),
+      padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 6),
       child: InkWell(
         onTap: onTap,
         child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 18),
           decoration: BoxDecoration(
             border: Border.all(color: colors.border, width: selected ? 6 : 3),
             borderRadius: BorderRadius.circular(14),

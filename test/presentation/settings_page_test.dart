@@ -20,6 +20,14 @@ void main() {
     when(() => bloc.state).thenReturn(kDefaultSettings);
   });
 
+  // Le gabarit de test par défaut fait 800×600 — plus court qu'un téléphone.
+  // On adapte la fenêtre à la page, jamais l'inverse.
+  void useTallSurface(WidgetTester tester) {
+    tester.view.physicalSize = const Size(1080, 2400);
+    tester.view.devicePixelRatio = 1.0;
+    addTearDown(tester.view.reset);
+  }
+
   Widget host() => MaterialApp(
         theme: buildTheme(AppPalette.light, TextSize.m),
         home: BlocProvider<SettingsBloc>.value(
@@ -29,6 +37,7 @@ void main() {
       );
 
   testWidgets('propose les trois themes et les trois paliers', (tester) async {
+    useTallSurface(tester);
     await tester.pumpWidget(host());
 
     expect(find.text('Clair'), findsOneWidget);
@@ -40,6 +49,7 @@ void main() {
   });
 
   testWidgets('choisir un theme emet ThemeSelected', (tester) async {
+    useTallSurface(tester);
     await tester.pumpWidget(host());
 
     await tester.tap(find.text('Sombre'));
@@ -47,6 +57,7 @@ void main() {
   });
 
   testWidgets('choisir un palier emet TextSizeSelected', (tester) async {
+    useTallSurface(tester);
     await tester.pumpWidget(host());
 
     await tester.tap(find.text('XL'));
@@ -54,6 +65,7 @@ void main() {
   });
 
   testWidgets('affiche un apercu en direct', (tester) async {
+    useTallSurface(tester);
     await tester.pumpWidget(host());
 
     expect(find.text('Marie'), findsOneWidget);
