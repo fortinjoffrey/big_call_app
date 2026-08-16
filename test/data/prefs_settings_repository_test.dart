@@ -33,4 +33,16 @@ void main() {
 
     expect(await repo.load(), kDefaultSettings);
   });
+
+  test('un champ valide survit a un champ voisin invalide', () async {
+    SharedPreferences.setMockInitialValues({'palette': 'yellow'});
+    final repo = PrefsSettingsRepository(await SharedPreferences.getInstance());
+
+    final settings = await repo.load();
+
+    // Le repli est par champ, pas global : la palette enregistrée est
+    // conservée, seule la taille manquante retombe sur le défaut.
+    expect(settings.palette, AppPalette.yellow);
+    expect(settings.textSize, kDefaultSettings.textSize);
+  });
 }
