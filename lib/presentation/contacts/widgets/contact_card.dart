@@ -3,6 +3,7 @@ import 'package:big_call_app/domain/entities/app_settings.dart';
 import 'package:big_call_app/domain/entities/contact_number.dart';
 import 'package:big_call_app/domain/entities/phone_contact.dart';
 import 'package:big_call_app/presentation/contacts/widgets/call_button.dart';
+import 'package:big_call_app/presentation/contacts/widgets/card_shell.dart';
 import 'package:flutter/material.dart';
 
 class ContactCard extends StatelessWidget {
@@ -26,16 +27,8 @@ class ContactCard extends StatelessWidget {
     final colors = paletteColors[palette]!;
     final theme = Theme.of(context);
 
-    // Bordure franche de 3 px, aucune ombre : une élévation est un indice de
-    // profondeur subtil, invisible en vision périphérique.
-    return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: colors.background,
-        border: Border.all(color: colors.border, width: 3),
-        borderRadius: BorderRadius.circular(14),
-      ),
+    return CardShell(
+      colors: colors,
       child: switch (layout) {
         ContactLayout.compact => contact.hasSingleNumber
             ? _singleNumberRow(theme)

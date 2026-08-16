@@ -26,11 +26,12 @@ class PaletteColors {
   final Color header;
   final Color onHeader;
 
-  /// Rouge de la carte SAMU. Sur fond noir, aucun rouge ne peut satisfaire à
-  /// la fois >= 3:1 contre le fond ET >= 7:1 sous du texte blanc — les deux
-  /// exigences s'excluent. « SAMU » est du grand texte (seuil AAA 4,5:1), et
-  /// ce rouge satisfait les deux contraintes : blanc dessus = 4,98:1, carte
-  /// sur fond = 4,98:1 (clair) / 4,22:1 (sombre).
+  /// Rouge du bouton d'appel de la carte SAMU — carte de contact ordinaire
+  /// dont seul le bouton diffère par sa couleur. Deux contraintes, comme
+  /// pour le bouton vert : l'icône blanche dessus >= 4,5:1, et le bouton
+  /// contre le fond de sa carte (`background`) >= 3:1 (cible tactile).
+  /// Mesuré : icône blanche sur rouge = 4,98:1 (les trois palettes) ; bouton
+  /// sur fond = 4,98:1 (clair) / 4,22:1 (sombre et jaune, fond noir).
   final Color emergency;
   final Color onEmergency;
 }

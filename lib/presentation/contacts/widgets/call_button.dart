@@ -20,12 +20,17 @@ class FullWidthCallButton extends StatelessWidget {
     required this.palette,
     required this.onPressed,
     required this.semanticLabel,
+    this.color,
     super.key,
   });
 
   final AppPalette palette;
   final VoidCallback onPressed;
   final String semanticLabel;
+
+  /// Couleur du bouton, `colors.button` (vert) par défaut. Utilisée par la
+  /// carte SAMU pour un bouton rouge, sans dupliquer la forme.
+  final Color? color;
 
   @override
   Widget build(BuildContext context) {
@@ -38,7 +43,7 @@ class FullWidthCallButton extends StatelessWidget {
         width: double.infinity,
         height: kCallButtonSize,
         child: Material(
-          color: colors.button,
+          color: color ?? colors.button,
           shape: RoundedRectangleBorder(
             side: BorderSide(color: colors.border, width: 3),
             borderRadius: BorderRadius.circular(14),
@@ -65,12 +70,17 @@ class CallButton extends StatelessWidget {
     required this.palette,
     required this.onPressed,
     required this.semanticLabel,
+    this.color,
     super.key,
   });
 
   final AppPalette palette;
   final VoidCallback onPressed;
   final String semanticLabel;
+
+  /// Couleur du bouton, `colors.button` (vert) par défaut. Utilisée par la
+  /// carte SAMU pour un bouton rouge, sans dupliquer la forme.
+  final Color? color;
 
   @override
   Widget build(BuildContext context) {
@@ -83,7 +93,7 @@ class CallButton extends StatelessWidget {
         width: kCallButtonSize,
         height: kCallButtonSize,
         child: Material(
-          color: colors.button,
+          color: color ?? colors.button,
           shape: CircleBorder(
             side: BorderSide(color: colors.border, width: 3),
           ),

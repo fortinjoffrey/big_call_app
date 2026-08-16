@@ -83,6 +83,7 @@ class ContactsPage extends StatelessWidget {
       ],
       EmergencyCard(
         palette: palette,
+        layout: layout,
         onSpeak: () => bloc.add(const LabelSpoken('SAMU')),
         onCall: () => bloc.add(const EmergencyCallRequested()),
       ),

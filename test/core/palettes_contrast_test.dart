@@ -38,12 +38,21 @@ void main() {
             greaterThanOrEqualTo(3.0));
       });
 
-      test('texte SAMU sur rouge >= 4.5:1 (grand texte)', () {
+      test('icone du bouton SAMU (blanche) sur rouge >= 4.5:1', () {
+        // Même seuil que l'icône du bouton vert : la carte SAMU est
+        // désormais une carte de contact ordinaire, seul son bouton d'appel
+        // change de couleur, donc il est jugé au même critère qu'un bouton
+        // d'appel — plus le seuil AAA « grand texte » qui n'a plus de sens
+        // ici puisque « SAMU » n'est plus écrit en blanc sur rouge.
         expect(contrastRatio(colors.onEmergency, colors.emergency),
             greaterThanOrEqualTo(4.5));
       });
 
-      test('carte SAMU sur fond >= 3:1', () {
+      test('bouton rouge SAMU sur le fond de sa carte >= 3:1', () {
+        // Le rouge n'est plus un aplat plein cadre : c'est un bouton rond
+        // posé sur `colors.background`, la même couleur que le fond de la
+        // carte de contact (et de l'écran). Cible tactile non textuelle,
+        // même seuil que la pastille verte.
         expect(contrastRatio(colors.emergency, colors.background),
             greaterThanOrEqualTo(3.0));
       });
