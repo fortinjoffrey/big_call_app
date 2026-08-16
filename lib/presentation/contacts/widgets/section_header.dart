@@ -38,16 +38,19 @@ class SectionHeader extends StatelessWidget {
       child: Container(
         width: double.infinity,
         color: colors.header,
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 16),
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 22),
         child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
             if (icon != null) ...[
               Icon(icon, size: kHeaderBaseSize * 1.4, color: iconColor ?? colors.onHeader),
               const SizedBox(width: 8),
             ],
-            Text(
-              title.toUpperCase(),
-              style: Theme.of(context).textTheme.labelLarge,
+            Flexible(
+              child: Text(
+                title.toUpperCase(),
+                style: Theme.of(context).textTheme.labelLarge,
+              ),
             ),
           ],
         ),

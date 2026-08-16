@@ -50,6 +50,7 @@ void main() {
     TextSize size, {
     ContactLayout layout = ContactLayout.compact,
     EmergencyStyle emergencyStyle = EmergencyStyle.section,
+    bool uppercaseNames = false,
   }) =>
       BlocProvider<ContactsBloc>.value(
         value: bloc,
@@ -59,6 +60,7 @@ void main() {
             palette: palette,
             layout: layout,
             emergencyStyle: emergencyStyle,
+            uppercaseNames: uppercaseNames,
           ),
         ),
       );
@@ -110,6 +112,20 @@ void main() {
     await expectLater(
       find.byType(ContactsPage),
       matchesGoldenFile('contacts_urgence_light_m.png'),
+    );
+  });
+
+  // Réglage « Majuscules » actif : les noms *et* les libellés de numéro
+  // (« Mobile », « Fixe ») passent en capitales. Seul golden à montrer cet
+  // effet — les autres le laissent désactivé.
+  testWidgets('contacts majuscules light m', (tester) async {
+    useGoldenSurface(tester);
+
+    await tester.pumpWidget(host(AppPalette.light, TextSize.m, uppercaseNames: true));
+
+    await expectLater(
+      find.byType(ContactsPage),
+      matchesGoldenFile('contacts_majuscules_light_m.png'),
     );
   });
 }

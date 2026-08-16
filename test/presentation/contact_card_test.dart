@@ -251,6 +251,59 @@ void main() {
       await tester.tap(find.text('MARIE'));
       expect(spoken, ['Marie']);
     });
+
+    testWidgets('le libelle du numero reste inchange quand le reglage est desactive',
+        (tester) async {
+      await tester.pumpWidget(host(onSpeak: (_) {}, onCall: (_) {}));
+
+      expect(find.text('Mobile'), findsOneWidget);
+      expect(find.text('MOBILE'), findsNothing);
+    });
+
+    testWidgets('le libelle du numero passe en capitales quand le reglage est active',
+        (tester) async {
+      await tester.pumpWidget(MaterialApp(
+        theme: buildTheme(AppPalette.light, TextSize.m),
+        home: Scaffold(
+          body: ContactCard(
+            contact: marie,
+            palette: AppPalette.light,
+            layout: ContactLayout.compact,
+            uppercaseNames: true,
+            onSpeak: (_) {},
+            onCall: (_) {},
+          ),
+        ),
+      ));
+
+      expect(find.text('MOBILE'), findsOneWidget);
+      expect(find.text('Mobile'), findsNothing);
+    });
+
+    testWidgets(
+        'ce qui est prononce pour un libelle garde sa casse d origine, meme majuscules affichees',
+        (tester) async {
+      final spoken = <String>[];
+      await tester.pumpWidget(MaterialApp(
+        theme: buildTheme(AppPalette.light, TextSize.m),
+        home: Scaffold(
+          body: ContactCard(
+            contact: marie,
+            palette: AppPalette.light,
+            layout: ContactLayout.compact,
+            uppercaseNames: true,
+            onSpeak: spoken.add,
+            onCall: (_) {},
+          ),
+        ),
+      ));
+
+      // Le libelle affiche est en capitales ; ce qui est prononce doit rester
+      // en casse normale (« Marie Mobile », jamais « M, O, B, I, L, E »
+      // lettre par lettre chez certains moteurs de synthese vocale).
+      await tester.tap(find.text('MOBILE'));
+      expect(spoken, ['Marie Mobile']);
+    });
   });
 
   group('mise en avant des numeros d urgence', () {
