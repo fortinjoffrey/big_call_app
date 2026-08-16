@@ -12,6 +12,7 @@ void main() {
   Widget host({
     required void Function(String) onSpeak,
     required void Function(ContactNumber) onCall,
+    ContactLayout layout = ContactLayout.compact,
   }) {
     return MaterialApp(
       theme: buildTheme(AppPalette.light, TextSize.m),
@@ -19,6 +20,7 @@ void main() {
         body: ContactCard(
           contact: marie,
           palette: AppPalette.light,
+          layout: layout,
           onSpeak: onSpeak,
           onCall: onCall,
         ),
@@ -108,6 +110,7 @@ void main() {
         body: ContactCard(
           contact: joffrey,
           palette: AppPalette.light,
+          layout: ContactLayout.compact,
           onSpeak: (_) {},
           onCall: (_) {},
         ),
@@ -117,5 +120,84 @@ void main() {
     expect(find.text('Joffrey'), findsOneWidget);
     expect(find.text('Mobile'), findsNothing);
     expect(find.byType(CallButton), findsOneWidget);
+  });
+
+  group('disposition large', () {
+    testWidgets('le bouton se place sous le nom, sans contraindre sa largeur',
+        (tester) async {
+      await tester.pumpWidget(host(
+        onSpeak: (_) {},
+        onCall: (_) {},
+        layout: ContactLayout.wide,
+      ));
+
+      final nameRect = tester.getRect(find.text('Marie'));
+      final buttonRect = tester.getRect(find.byType(FullWidthCallButton).first);
+      final cardRect = tester.getRect(find.byType(ContactCard));
+
+      // Le bouton est en dessous du nom, jamais à côté.
+      expect(buttonRect.top, greaterThanOrEqualTo(nameRect.bottom));
+      // Le bouton s'étire sur toute la largeur utile de la carte : sa
+      // largeur n'est pas rétrécie par une colonne partagée avec le nom.
+      expect(buttonRect.width, greaterThan(cardRect.width * 0.8));
+      // La largeur disponible pour le nom n'est pas amputée par le bouton :
+      // le mot le plus large que porte le nom tiendrait largement plus que
+      // la largeur d'un rond de 72 px sur cette même ligne.
+      final nameZone = tester.getRect(
+        find.ancestor(of: find.text('Marie'), matching: find.byType(SizedBox)).first,
+      );
+      expect(nameZone.width, greaterThan(cardRect.width * 0.8));
+    });
+
+    testWidgets('un contact a un seul numero n affiche pas de libelle non plus',
+        (tester) async {
+      await tester.pumpWidget(MaterialApp(
+        theme: buildTheme(AppPalette.light, TextSize.m),
+        home: Scaffold(
+          body: ContactCard(
+            contact: joffrey,
+            palette: AppPalette.light,
+            layout: ContactLayout.wide,
+            onSpeak: (_) {},
+            onCall: (_) {},
+          ),
+        ),
+      ));
+
+      expect(find.text('Joffrey'), findsOneWidget);
+      expect(find.text('Mobile'), findsNothing);
+      expect(find.byType(FullWidthCallButton), findsOneWidget);
+    });
+
+    testWidgets('les trois zones tactiles fonctionnent, y compris a cote du libelle',
+        (tester) async {
+      final spoken = <String>[];
+      final called = <ContactNumber>[];
+      await tester.pumpWidget(host(
+        onSpeak: spoken.add,
+        onCall: called.add,
+        layout: ContactLayout.wide,
+      ));
+
+      await tester.tap(find.text('Marie'));
+      expect(spoken, ['Marie']);
+      spoken.clear();
+
+      await tester.tap(find.text('Mobile'));
+      expect(spoken, ['Marie Mobile']);
+      spoken.clear();
+
+      // A cote du libelle, dans la zone elargie mais sans toucher le texte.
+      final labelRect = tester.getRect(find.text('Mobile'));
+      final labelZoneRect = tester.getRect(
+        find.ancestor(of: find.text('Mobile'), matching: find.byType(SizedBox)).first,
+      );
+      final x = labelZoneRect.right - 4;
+      await tester.tapAt(Offset(x, labelRect.center.dy));
+      expect(spoken, ['Marie Mobile']);
+
+      await tester.tap(find.byType(FullWidthCallButton).first);
+      expect(called.single.number, '0611223344');
+    });
   });
 }

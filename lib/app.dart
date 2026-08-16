@@ -57,7 +57,10 @@ class BigCallApp extends StatelessWidget {
                 getIt<SpeechService>(),
                 getIt<SystemSettingsService>(),
               )..add(const ContactsRequested()),
-              child: ContactsPage(palette: settings.palette),
+              child: ContactsPage(
+                palette: settings.palette,
+                layout: settings.layout,
+              ),
             ),
           );
         },

@@ -53,6 +53,7 @@ class SettingsPage extends StatelessWidget {
                 child: ContactCard(
                   contact: _previewContact,
                   palette: settings.palette,
+                  layout: settings.layout,
                   onSpeak: (_) {},
                   onCall: (_) {},
                 ),
@@ -87,6 +88,17 @@ class SettingsPage extends StatelessWidget {
                     ),
                 ],
               ),
+              const SizedBox(height: 28),
+              Text('Disposition', style: theme.textTheme.titleLarge),
+              const SizedBox(height: 8),
+              for (final layout in ContactLayout.values)
+                _ChoiceTile(
+                  label: layout.label,
+                  selected: layout == settings.layout,
+                  palette: settings.palette,
+                  onTap: () =>
+                      context.read<SettingsBloc>().add(LayoutSelected(layout)),
+                ),
             ],
           ),
         ),

@@ -51,7 +51,10 @@ void main() {
         ],
         child: MaterialApp(
           theme: buildTheme(AppPalette.light, TextSize.m),
-          home: const ContactsPage(palette: AppPalette.light),
+          home: const ContactsPage(
+            palette: AppPalette.light,
+            layout: ContactLayout.compact,
+          ),
         ),
       );
 

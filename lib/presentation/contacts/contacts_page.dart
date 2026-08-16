@@ -13,9 +13,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class ContactsPage extends StatelessWidget {
-  const ContactsPage({required this.palette, super.key});
+  const ContactsPage({required this.palette, required this.layout, super.key});
 
   final AppPalette palette;
+  final ContactLayout layout;
 
   @override
   Widget build(BuildContext context) {
@@ -64,6 +65,7 @@ class ContactsPage extends StatelessWidget {
     Widget card(PhoneContact contact) => ContactCard(
           contact: contact,
           palette: palette,
+          layout: layout,
           onSpeak: (text) => bloc.add(LabelSpoken(text)),
           onCall: (number) => bloc.add(CallRequested(number.number)),
         );

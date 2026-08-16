@@ -17,8 +17,11 @@ void main() {
     SharedPreferences.setMockInitialValues({});
     final repo = PrefsSettingsRepository(await SharedPreferences.getInstance());
 
-    const settings =
-        AppSettings(palette: AppPalette.yellow, textSize: TextSize.xl);
+    const settings = AppSettings(
+      palette: AppPalette.yellow,
+      textSize: TextSize.xl,
+      layout: ContactLayout.wide,
+    );
     await repo.save(settings);
 
     expect(await repo.load(), settings);
@@ -28,6 +31,7 @@ void main() {
     SharedPreferences.setMockInitialValues({
       'palette': 'fuchsia',
       'textSize': 'gigantesque',
+      'layout': 'diagonale',
     });
     final repo = PrefsSettingsRepository(await SharedPreferences.getInstance());
 
@@ -43,6 +47,18 @@ void main() {
     // Le repli est par champ, pas global : la palette enregistrée est
     // conservée, seule la taille manquante retombe sur le défaut.
     expect(settings.palette, AppPalette.yellow);
+    expect(settings.textSize, kDefaultSettings.textSize);
+    expect(settings.layout, kDefaultSettings.layout);
+  });
+
+  test('la disposition survit a un theme et un palier voisins invalides', () async {
+    SharedPreferences.setMockInitialValues({'layout': 'wide'});
+    final repo = PrefsSettingsRepository(await SharedPreferences.getInstance());
+
+    final settings = await repo.load();
+
+    expect(settings.layout, ContactLayout.wide);
+    expect(settings.palette, kDefaultSettings.palette);
     expect(settings.textSize, kDefaultSettings.textSize);
   });
 }

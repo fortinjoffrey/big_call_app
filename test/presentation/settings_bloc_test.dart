@@ -23,11 +23,11 @@ void main() {
     build: () => SettingsBloc(repository, kDefaultSettings),
     act: (bloc) => bloc.add(const ThemeSelected(AppPalette.yellow)),
     expect: () => [
-      const AppSettings(palette: AppPalette.yellow, textSize: TextSize.m),
+      const AppSettings(palette: AppPalette.yellow, textSize: TextSize.m, layout: ContactLayout.compact),
     ],
     verify: (_) {
       verify(() => repository.save(
-            const AppSettings(palette: AppPalette.yellow, textSize: TextSize.m),
+            const AppSettings(palette: AppPalette.yellow, textSize: TextSize.m, layout: ContactLayout.compact),
           )).called(1);
     },
   );
@@ -37,11 +37,33 @@ void main() {
     build: () => SettingsBloc(repository, kDefaultSettings),
     act: (bloc) => bloc.add(const TextSizeSelected(TextSize.xl)),
     expect: () => [
-      const AppSettings(palette: AppPalette.light, textSize: TextSize.xl),
+      const AppSettings(palette: AppPalette.light, textSize: TextSize.xl, layout: ContactLayout.compact),
     ],
     verify: (_) {
       verify(() => repository.save(
-            const AppSettings(palette: AppPalette.light, textSize: TextSize.xl),
+            const AppSettings(palette: AppPalette.light, textSize: TextSize.xl, layout: ContactLayout.compact),
+          )).called(1);
+    },
+  );
+
+  blocTest<SettingsBloc, AppSettings>(
+    'change la disposition et la persiste',
+    build: () => SettingsBloc(repository, kDefaultSettings),
+    act: (bloc) => bloc.add(const LayoutSelected(ContactLayout.wide)),
+    expect: () => [
+      const AppSettings(
+        palette: AppPalette.light,
+        textSize: TextSize.m,
+        layout: ContactLayout.wide,
+      ),
+    ],
+    verify: (_) {
+      verify(() => repository.save(
+            const AppSettings(
+              palette: AppPalette.light,
+              textSize: TextSize.m,
+              layout: ContactLayout.wide,
+            ),
           )).called(1);
     },
   );
@@ -53,10 +75,10 @@ void main() {
       ..add(const ThemeSelected(AppPalette.yellow))
       ..add(const TextSizeSelected(TextSize.xl)),
     expect: () => [
-      const AppSettings(palette: AppPalette.yellow, textSize: TextSize.m),
+      const AppSettings(palette: AppPalette.yellow, textSize: TextSize.m, layout: ContactLayout.compact),
       // Le second changement part de l'état courant, pas des défauts : sans
       // cela, choisir un palier après un thème effacerait le thème.
-      const AppSettings(palette: AppPalette.yellow, textSize: TextSize.xl),
+      const AppSettings(palette: AppPalette.yellow, textSize: TextSize.xl, layout: ContactLayout.compact),
     ],
   );
 
@@ -64,7 +86,7 @@ void main() {
     'demarre sur les reglages fournis par main()',
     build: () => SettingsBloc(
       repository,
-      const AppSettings(palette: AppPalette.dark, textSize: TextSize.l),
+      const AppSettings(palette: AppPalette.dark, textSize: TextSize.l, layout: ContactLayout.compact),
     ),
     verify: (bloc) {
       expect(bloc.state.palette, AppPalette.dark);

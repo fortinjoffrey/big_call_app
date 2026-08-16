@@ -27,3 +27,15 @@ final class TextSizeSelected extends SettingsEvent {
   @override
   int get hashCode => textSize.hashCode;
 }
+
+final class LayoutSelected extends SettingsEvent {
+  const LayoutSelected(this.layout);
+  final ContactLayout layout;
+
+  @override
+  bool operator ==(Object other) =>
+      other is LayoutSelected && other.layout == layout;
+
+  @override
+  int get hashCode => layout.hashCode;
+}

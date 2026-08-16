@@ -12,6 +12,15 @@ extension AppPaletteLabel on AppPalette {
       };
 }
 
+enum ContactLayout { compact, wide }
+
+extension ContactLayoutLabel on ContactLayout {
+  String get label => switch (this) {
+        ContactLayout.compact => 'Bouton à droite',
+        ContactLayout.wide => 'Bouton en dessous',
+      };
+}
+
 enum TextSize { m, l, xl }
 
 extension TextSizeScale on TextSize {
@@ -33,10 +42,12 @@ abstract class AppSettings with _$AppSettings {
   const factory AppSettings({
     required AppPalette palette,
     required TextSize textSize,
+    required ContactLayout layout,
   }) = _AppSettings;
 }
 
 const kDefaultSettings = AppSettings(
   palette: AppPalette.light,
   textSize: TextSize.m,
+  layout: ContactLayout.compact,
 );

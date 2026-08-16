@@ -18,6 +18,12 @@ class SettingsBloc extends Bloc<SettingsEvent, AppSettings> {
       emit(next);
       await _repository.save(next);
     });
+
+    on<LayoutSelected>((event, emit) async {
+      final next = state.copyWith(layout: event.layout);
+      emit(next);
+      await _repository.save(next);
+    });
   }
 
   final SettingsRepository _repository;

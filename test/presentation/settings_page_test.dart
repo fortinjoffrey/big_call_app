@@ -67,6 +67,22 @@ void main() {
     verify(() => bloc.add(const TextSizeSelected(TextSize.xl))).called(1);
   });
 
+  testWidgets('propose les deux dispositions', (tester) async {
+    useTallSurface(tester);
+    await tester.pumpWidget(host());
+
+    expect(find.text('Bouton à droite'), findsOneWidget);
+    expect(find.text('Bouton en dessous'), findsOneWidget);
+  });
+
+  testWidgets('choisir une disposition emet LayoutSelected', (tester) async {
+    useTallSurface(tester);
+    await tester.pumpWidget(host());
+
+    await tester.tap(find.text('Bouton en dessous'));
+    verify(() => bloc.add(const LayoutSelected(ContactLayout.wide))).called(1);
+  });
+
   testWidgets('affiche un apercu en direct', (tester) async {
     useTallSurface(tester);
     await tester.pumpWidget(host());
@@ -78,7 +94,11 @@ void main() {
   testWidgets('l apercu reflete le theme et le palier choisis', (tester) async {
     useTallSurface(tester);
     when(() => bloc.state).thenReturn(
-      const AppSettings(palette: AppPalette.dark, textSize: TextSize.xl),
+      const AppSettings(
+        palette: AppPalette.dark,
+        textSize: TextSize.xl,
+        layout: ContactLayout.compact,
+      ),
     );
 
     await tester.pumpWidget(MaterialApp(

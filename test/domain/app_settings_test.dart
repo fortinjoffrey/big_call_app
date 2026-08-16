@@ -17,5 +17,11 @@ void main() {
   test('les reglages par defaut sont theme clair et palier M', () {
     expect(kDefaultSettings.palette, AppPalette.light);
     expect(kDefaultSettings.textSize, TextSize.m);
+    expect(kDefaultSettings.layout, ContactLayout.compact);
+  });
+
+  test('les libelles de disposition decrivent la position du bouton', () {
+    expect(ContactLayout.compact.label, 'Bouton à droite');
+    expect(ContactLayout.wide.label, 'Bouton en dessous');
   });
 }

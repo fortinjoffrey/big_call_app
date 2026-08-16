@@ -39,11 +39,12 @@ void main() {
     addTearDown(tester.view.reset);
   }
 
-  Widget host(AppPalette palette, TextSize size) => BlocProvider<ContactsBloc>.value(
+  Widget host(AppPalette palette, TextSize size, {ContactLayout layout = ContactLayout.compact}) =>
+      BlocProvider<ContactsBloc>.value(
         value: bloc,
         child: MaterialApp(
           theme: buildTheme(palette, size),
-          home: ContactsPage(palette: palette),
+          home: ContactsPage(palette: palette, layout: layout),
         ),
       );
 
@@ -60,5 +61,21 @@ void main() {
         );
       });
     }
+  }
+
+  // « Anne-Marie Delacroix » au palier XL est le cas qui a motivé cette
+  // disposition : c'est le nom le plus long, au plus grand palier, celui qui
+  // enroulait le plus mal contre le bouton rond.
+  for (final palette in AppPalette.values) {
+    testWidgets('contacts wide ${palette.name} xl', (tester) async {
+      useGoldenSurface(tester);
+
+      await tester.pumpWidget(host(palette, TextSize.xl, layout: ContactLayout.wide));
+
+      await expectLater(
+        find.byType(ContactsPage),
+        matchesGoldenFile('contacts_wide_${palette.name}_xl.png'),
+      );
+    });
   }
 }

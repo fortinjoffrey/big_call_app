@@ -7,6 +7,7 @@ class PrefsSettingsRepository implements SettingsRepository {
 
   static const _paletteKey = 'palette';
   static const _textSizeKey = 'textSize';
+  static const _layoutKey = 'layout';
 
   final SharedPreferences _prefs;
 
@@ -15,6 +16,7 @@ class PrefsSettingsRepository implements SettingsRepository {
     return AppSettings(
       palette: _readEnum(_paletteKey, AppPalette.values, kDefaultSettings.palette),
       textSize: _readEnum(_textSizeKey, TextSize.values, kDefaultSettings.textSize),
+      layout: _readEnum(_layoutKey, ContactLayout.values, kDefaultSettings.layout),
     );
   }
 
@@ -28,6 +30,7 @@ class PrefsSettingsRepository implements SettingsRepository {
   Future<void> save(AppSettings settings) async {
     await _prefs.setString(_paletteKey, settings.palette.name);
     await _prefs.setString(_textSizeKey, settings.textSize.name);
+    await _prefs.setString(_layoutKey, settings.layout.name);
   }
 
   /// Une valeur inconnue (renommage d'énumération, fichier corrompu) retombe

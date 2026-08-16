@@ -26,7 +26,11 @@ void main() {
   }
 
   Widget host(AppPalette palette, TextSize size) {
-    final settings = AppSettings(palette: palette, textSize: size);
+    final settings = AppSettings(
+      palette: palette,
+      textSize: size,
+      layout: ContactLayout.compact,
+    );
     bloc = _MockSettingsBloc();
     when(() => bloc.state).thenReturn(settings);
 
