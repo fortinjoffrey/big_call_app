@@ -31,7 +31,7 @@ class BigCallApp extends StatelessWidget {
       child: BlocBuilder<SettingsBloc, AppSettings>(
         builder: (context, settings) {
           return MaterialApp(
-            title: 'Téléphone',
+            title: 'Allô',
             debugShowCheckedModeBanner: false,
             theme: buildTheme(settings.palette, settings.textSize),
             builder: (context, child) => MediaQuery.withClampedTextScaling(

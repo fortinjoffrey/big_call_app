@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Nom affiché sous l'icône. Passe par une ressource plutôt que par un
+         littéral dans le manifeste : c'est l'endroit prévu pour du texte
+         destiné à l'utilisateur, et l'accent de « Allô » y est encodé sans
+         dépendre de l'encodage du manifeste. -->
+    <string name="app_name">Allô</string>
+</resources>
