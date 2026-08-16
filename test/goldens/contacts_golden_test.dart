@@ -30,11 +30,17 @@ void main() {
     ));
   });
 
-  // Surface volontairement surdimensionnée : une ListView ne construit que
-  // ce qui est visible, il faut donc assez de hauteur pour capturer toute
-  // la liste en une seule image.
+  // Largeur réaliste de téléphone (390dp) plutôt que 1080 : à 1080dp, les
+  // noms longs (« Anne-Marie Delacroix ») avaient toute la place du monde et
+  // ne révélaient jamais les problèmes d'enroulement/débordement qu'ils
+  // provoquent sur un vrai téléphone.
+  //
+  // Hauteur mesurée empiriquement : à 390dp, le dernier ContactCard (disposition
+  // « wide », palier XL, le cas le plus haut) se termine vers y=1208. On ajoute
+  // une marge de sécurité pour ne rien perdre, sans viser un canevas
+  // inutilement grand.
   void useGoldenSurface(WidgetTester tester) {
-    tester.view.physicalSize = const Size(1080, 4000);
+    tester.view.physicalSize = const Size(390, 1260);
     tester.view.devicePixelRatio = 1.0;
     addTearDown(tester.view.reset);
   }
