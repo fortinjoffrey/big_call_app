@@ -154,6 +154,7 @@ void main() {
         layout: ContactLayout.compact,
         emergencyStyle: EmergencyStyle.section,
         uppercaseNames: false,
+        speakScrollLetters: true,
       ),
     );
 
@@ -195,4 +196,27 @@ void main() {
       expect(find.text('SAMU'), findsOneWidget);
     },
   );
+
+  testWidgets('propose les deux etats de l annonce des lettres', (
+    tester,
+  ) async {
+    useTallSurface(tester);
+
+    await tester.pumpWidget(host());
+
+    expect(find.text('ANNONCE DES LETTRES'), findsOneWidget);
+    expect(find.text('ACTIVÉE'), findsOneWidget);
+    expect(find.text('DÉSACTIVÉE'), findsOneWidget);
+  });
+
+  testWidgets('couper l annonce emet ScrollLettersSelected(false)', (
+    tester,
+  ) async {
+    useTallSurface(tester);
+
+    await tester.pumpWidget(host());
+    await tester.tap(find.text('DÉSACTIVÉE'));
+
+    verify(() => bloc.add(const ScrollLettersSelected(false))).called(1);
+  });
 }

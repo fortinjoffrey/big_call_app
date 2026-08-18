@@ -10,6 +10,7 @@ class PrefsSettingsRepository implements SettingsRepository {
   static const _layoutKey = 'layout';
   static const _emergencyStyleKey = 'emergencyStyle';
   static const _uppercaseNamesKey = 'uppercaseNames';
+  static const _speakScrollLettersKey = 'speakScrollLetters';
 
   final SharedPreferences _prefs;
 
@@ -38,6 +39,9 @@ class PrefsSettingsRepository implements SettingsRepository {
       ),
       uppercaseNames:
           _prefs.getBool(_uppercaseNamesKey) ?? kDefaultSettings.uppercaseNames,
+      speakScrollLetters:
+          _prefs.getBool(_speakScrollLettersKey) ??
+          kDefaultSettings.speakScrollLetters,
     );
   }
 
@@ -48,6 +52,10 @@ class PrefsSettingsRepository implements SettingsRepository {
     await _prefs.setString(_layoutKey, settings.layout.name);
     await _prefs.setString(_emergencyStyleKey, settings.emergencyStyle.name);
     await _prefs.setBool(_uppercaseNamesKey, settings.uppercaseNames);
+    await _prefs.setBool(
+      _speakScrollLettersKey,
+      settings.speakScrollLetters,
+    );
   }
 
   T _readEnum<T extends Enum>(String key, List<T> values, T fallback) {

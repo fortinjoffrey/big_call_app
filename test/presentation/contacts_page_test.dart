@@ -1,5 +1,7 @@
 import 'package:big_call_app/core/theme/app_theme.dart';
 import 'package:big_call_app/domain/entities/app_settings.dart';
+import 'package:big_call_app/domain/entities/contact_number.dart';
+import 'package:big_call_app/domain/entities/phone_contact.dart';
 import 'package:big_call_app/presentation/contacts/contacts_bloc.dart';
 import 'package:big_call_app/presentation/contacts/contacts_event.dart';
 import 'package:big_call_app/presentation/contacts/contacts_page.dart';
@@ -21,7 +23,16 @@ class _MockContactsBloc extends MockBloc<ContactsEvent, ContactsState>
 class _MockSettingsBloc extends MockBloc<SettingsEvent, AppSettings>
     implements SettingsBloc {}
 
+PhoneContact _contact(String name) => PhoneContact(
+  id: name,
+  displayName: name,
+  isFavorite: false,
+  numbers: const [ContactNumber(number: '0600000000', label: 'Mobile')],
+);
+
 void main() {
+  setUpAll(() => registerFallbackValue(const ContactsRequested()));
+
   late _MockContactsBloc bloc;
   late _MockSettingsBloc settingsBloc;
 
@@ -37,7 +48,10 @@ void main() {
     addTearDown(tester.view.reset);
   }
 
-  Widget host({EmergencyStyle emergencyStyle = EmergencyStyle.section}) =>
+  Widget host({
+    EmergencyStyle emergencyStyle = EmergencyStyle.section,
+    bool speakScrollLetters = true,
+  }) =>
       MultiBlocProvider(
         providers: [
           BlocProvider<ContactsBloc>.value(value: bloc),
@@ -49,6 +63,7 @@ void main() {
             palette: AppPalette.light,
             layout: ContactLayout.compact,
             emergencyStyle: emergencyStyle,
+            speakScrollLetters: speakScrollLetters,
           ),
         ),
       );
@@ -277,5 +292,85 @@ void main() {
     await tester.pump();
 
     expect(controller.offset, 0);
+  });
+
+  List<String> spokenLabels() {
+    final captured = verify(() => bloc.add(captureAny())).captured;
+    return captured.whereType<LabelSpoken>().map((e) => e.text).toList();
+  }
+
+  void useAlphabet(WidgetTester tester) {
+    tester.view.physicalSize = const Size(1080, 900);
+    tester.view.devicePixelRatio = 1.0;
+    addTearDown(tester.view.reset);
+
+    when(() => bloc.state).thenReturn(
+      ContactsReady(
+        favorites: const [],
+        others: [
+          for (final name in const [
+            'Alice',
+            'Albert',
+            'Bernard',
+            'Brigitte',
+            'Camille',
+            'Claude',
+            'Denis',
+            'Dominique',
+            'Emile',
+            'Estelle',
+            'Fanny',
+            'Francois',
+            'Gilbert',
+            'Genevieve',
+            'Helene',
+            'Hubert',
+          ])
+            _contact(name),
+        ],
+        showFavoritesSection: false,
+      ),
+    );
+  }
+
+  testWidgets('le scroll annonce la lettre atteinte', (tester) async {
+    useAlphabet(tester);
+
+    await tester.pumpWidget(host());
+    for (var i = 0; i < 8; i++) {
+      await tester.drag(find.byType(ListView), const Offset(0, -200));
+      await tester.pump();
+    }
+
+    expect(spokenLabels(), ['A', 'B', 'C', 'D']);
+  });
+
+  testWidgets('reglage desactive : aucune annonce pendant le scroll', (
+    tester,
+  ) async {
+    useAlphabet(tester);
+
+    await tester.pumpWidget(host(speakScrollLetters: false));
+    for (var i = 0; i < 4; i++) {
+      await tester.drag(find.byType(ListView), const Offset(0, -150));
+      await tester.pump();
+    }
+
+    verifyNever(() => bloc.add(any(that: isA<LabelSpoken>())));
+  });
+
+  testWidgets('le retour au premier plan ne parle pas', (tester) async {
+    useAlphabet(tester);
+
+    await tester.pumpWidget(host());
+    await tester.drag(find.byType(ListView), const Offset(0, -400));
+    await tester.pump();
+    final beforeResume = spokenLabels().length;
+
+    tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.paused);
+    tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.resumed);
+    await tester.pump();
+
+    expect(spokenLabels().length, beforeResume);
   });
 }

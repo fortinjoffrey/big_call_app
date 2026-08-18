@@ -52,6 +52,7 @@ class BigCallApp extends StatelessWidget {
                 layout: settings.layout,
                 emergencyStyle: settings.emergencyStyle,
                 uppercaseNames: settings.uppercaseNames,
+                speakScrollLetters: settings.speakScrollLetters,
               ),
             ),
           );

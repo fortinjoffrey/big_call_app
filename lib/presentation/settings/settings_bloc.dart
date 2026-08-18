@@ -34,6 +34,14 @@ class SettingsBloc extends Bloc<SettingsEvent, AppSettings> {
       emit(next);
       await _repository.save(next);
     });
+
+    on<ScrollLettersSelected>((event, emit) async {
+      final next = state.copyWith(
+        speakScrollLetters: event.speakScrollLetters,
+      );
+      emit(next);
+      await _repository.save(next);
+    });
   }
 
   final SettingsRepository _repository;

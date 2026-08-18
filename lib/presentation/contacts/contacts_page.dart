@@ -1,5 +1,6 @@
 import 'package:big_call_app/core/failure.dart';
 import 'package:big_call_app/core/theme/app_palettes.dart';
+import 'package:big_call_app/domain/contact_initial.dart';
 import 'package:big_call_app/domain/emergency_grouping.dart';
 import 'package:big_call_app/domain/entities/app_settings.dart';
 import 'package:big_call_app/domain/entities/phone_contact.dart';
@@ -7,6 +8,7 @@ import 'package:big_call_app/presentation/contacts/contacts_bloc.dart';
 import 'package:big_call_app/presentation/contacts/contacts_event.dart';
 import 'package:big_call_app/presentation/contacts/contacts_state.dart';
 import 'package:big_call_app/presentation/contacts/widgets/contact_card.dart';
+import 'package:big_call_app/presentation/contacts/widgets/letter_scroll_announcer.dart';
 import 'package:big_call_app/presentation/contacts/widgets/message_screen.dart';
 import 'package:big_call_app/presentation/contacts/widgets/section_header.dart';
 import 'package:big_call_app/presentation/settings/settings_page.dart';
@@ -19,6 +21,7 @@ class ContactsPage extends StatefulWidget {
     required this.layout,
     required this.emergencyStyle,
     this.uppercaseNames = false,
+    this.speakScrollLetters = true,
     super.key,
   });
 
@@ -26,6 +29,7 @@ class ContactsPage extends StatefulWidget {
   final ContactLayout layout;
   final EmergencyStyle emergencyStyle;
   final bool uppercaseNames;
+  final bool speakScrollLetters;
 
   @override
   State<ContactsPage> createState() => _ContactsPageState();
@@ -34,6 +38,8 @@ class ContactsPage extends StatefulWidget {
 class _ContactsPageState extends State<ContactsPage>
     with WidgetsBindingObserver {
   final _scrollController = ScrollController();
+  final _letterAnchors = LetterAnchorRegistry();
+  final _announcerKey = GlobalKey<LetterScrollAnnouncerState>();
 
   @override
   void initState() {
@@ -56,9 +62,10 @@ class _ContactsPageState extends State<ContactsPage>
   }
 
   void _scrollToTop() {
-    if (_scrollController.hasClients) {
-      _scrollController.jumpTo(0);
-    }
+    if (!_scrollController.hasClients) return;
+
+    _announcerKey.currentState?.forget();
+    _scrollController.jumpTo(0);
   }
 
   @override
@@ -118,6 +125,14 @@ class _ContactsPageState extends State<ContactsPage>
       onCall: (number) => bloc.add(CallRequested(number.number)),
     );
 
+    Widget announcedCard(PhoneContact contact) => widget.speakScrollLetters
+        ? LetterAnchor(
+            registry: _letterAnchors,
+            letter: initialLetter(contact),
+            child: card(contact),
+          )
+        : card(contact);
+
     final useSection = widget.emergencyStyle == EmergencyStyle.section;
     final favorites = useSection
         ? withoutEmergency(state.favorites)
@@ -157,7 +172,7 @@ class _ContactsPageState extends State<ContactsPage>
               ? null
               : () => _openSettings(context),
         ),
-        ...others.map(card),
+        ...others.map(announcedCard),
       ],
     ];
 
@@ -168,10 +183,19 @@ class _ContactsPageState extends State<ContactsPage>
       ],
     ];
 
-    return ListView.builder(
+    final list = ListView.builder(
       controller: _scrollController,
       itemCount: children.length,
       itemBuilder: (context, index) => children[index],
+    );
+
+    if (!widget.speakScrollLetters) return list;
+
+    return LetterScrollAnnouncer(
+      key: _announcerKey,
+      registry: _letterAnchors,
+      onLetterReached: (letter) => bloc.add(LabelSpoken(letter)),
+      child: list,
     );
   }
 

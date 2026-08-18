@@ -63,3 +63,16 @@ final class UppercaseNamesSelected extends SettingsEvent {
   @override
   int get hashCode => uppercaseNames.hashCode;
 }
+
+final class ScrollLettersSelected extends SettingsEvent {
+  const ScrollLettersSelected(this.speakScrollLetters);
+  final bool speakScrollLetters;
+
+  @override
+  bool operator ==(Object other) =>
+      other is ScrollLettersSelected &&
+      other.speakScrollLetters == speakScrollLetters;
+
+  @override
+  int get hashCode => speakScrollLetters.hashCode;
+}

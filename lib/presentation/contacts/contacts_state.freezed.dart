@@ -236,7 +236,6 @@ class ContactsReady implements ContactsState {
   return EqualUnmodifiableListView(_others);
 }
 
-/// Faux sur iOS : la section « Favoris » est alors masquée entièrement.
  final  bool showFavoritesSection;
  final  Failure? callError;
 

@@ -104,6 +104,28 @@ class SettingsPage extends StatelessWidget {
                 ],
               ),
               _Section(
+                title: 'Annonce des lettres',
+                palette: settings.palette,
+                tiles: [
+                  _ChoiceTile(
+                    label: 'ACTIV\u00c9E',
+                    selected: settings.speakScrollLetters,
+                    palette: settings.palette,
+                    onTap: () => context.read<SettingsBloc>().add(
+                      const ScrollLettersSelected(true),
+                    ),
+                  ),
+                  _ChoiceTile(
+                    label: 'D\u00c9SACTIV\u00c9E',
+                    selected: !settings.speakScrollLetters,
+                    palette: settings.palette,
+                    onTap: () => context.read<SettingsBloc>().add(
+                      const ScrollLettersSelected(false),
+                    ),
+                  ),
+                ],
+              ),
+              _Section(
                 title: 'Disposition',
                 palette: settings.palette,
                 tiles: [

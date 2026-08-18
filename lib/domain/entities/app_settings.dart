@@ -55,6 +55,7 @@ abstract class AppSettings with _$AppSettings {
     required ContactLayout layout,
     required EmergencyStyle emergencyStyle,
     required bool uppercaseNames,
+    required bool speakScrollLetters,
   }) = _AppSettings;
 }
 
@@ -64,4 +65,5 @@ const kDefaultSettings = AppSettings(
   layout: ContactLayout.compact,
   emergencyStyle: EmergencyStyle.section,
   uppercaseNames: false,
+  speakScrollLetters: true,
 );

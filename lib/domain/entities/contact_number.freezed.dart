@@ -14,8 +14,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$ContactNumber {
 
- String get number;/// Libellé déjà traduit en français : « Mobile », « Fixe », « Bureau »…
- String get label;
+ String get number; String get label;
 /// Create a copy of ContactNumber
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -212,7 +211,6 @@ class _ContactNumber extends ContactNumber {
   
 
 @override final  String number;
-/// Libellé déjà traduit en français : « Mobile », « Fixe », « Bureau »…
 @override final  String label;
 
 /// Create a copy of ContactNumber

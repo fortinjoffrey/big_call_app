@@ -23,6 +23,7 @@ void main() {
       layout: ContactLayout.wide,
       emergencyStyle: EmergencyStyle.highlight,
       uppercaseNames: true,
+      speakScrollLetters: false,
     );
     await repo.save(settings);
 

@@ -32,6 +32,7 @@ void main() {
       layout: ContactLayout.compact,
       emergencyStyle: EmergencyStyle.section,
       uppercaseNames: false,
+      speakScrollLetters: true,
     );
     bloc = _MockSettingsBloc();
     when(() => bloc.state).thenReturn(settings);
