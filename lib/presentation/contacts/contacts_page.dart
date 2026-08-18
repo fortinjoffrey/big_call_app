@@ -13,7 +13,7 @@ import 'package:big_call_app/presentation/settings/settings_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-class ContactsPage extends StatelessWidget {
+class ContactsPage extends StatefulWidget {
   const ContactsPage({
     required this.palette,
     required this.layout,
@@ -28,6 +28,40 @@ class ContactsPage extends StatelessWidget {
   final bool uppercaseNames;
 
   @override
+  State<ContactsPage> createState() => _ContactsPageState();
+}
+
+class _ContactsPageState extends State<ContactsPage>
+    with WidgetsBindingObserver {
+  final _scrollController = ScrollController();
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      _scrollToTop();
+    }
+  }
+
+  void _scrollToTop() {
+    if (_scrollController.hasClients) {
+      _scrollController.jumpTo(0);
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: SafeArea(
@@ -40,7 +74,7 @@ class ContactsPage extends StatelessWidget {
               child: CircularProgressIndicator(),
             ),
             ContactsPermissionDenied() => MessageScreen(
-              palette: palette,
+              palette: widget.palette,
               message:
                   "L'application a besoin de l'accès à vos contacts pour "
                   'les afficher.',
@@ -50,7 +84,7 @@ class ContactsPage extends StatelessWidget {
               ),
             ),
             ContactsError() => MessageScreen(
-              palette: palette,
+              palette: widget.palette,
               message: "Les contacts n'ont pas pu être chargés.",
               actionLabel: 'RÉESSAYER',
               onAction: () =>
@@ -59,7 +93,7 @@ class ContactsPage extends StatelessWidget {
             ContactsReady(:final favorites, :final others) =>
               favorites.isEmpty && others.isEmpty
                   ? MessageScreen(
-                      palette: palette,
+                      palette: widget.palette,
                       message: 'Aucun contact dans ce téléphone.',
                     )
                   : _buildList(context, state),
@@ -72,19 +106,19 @@ class ContactsPage extends StatelessWidget {
   Widget _buildList(BuildContext context, ContactsReady state) {
     final bloc = context.read<ContactsBloc>();
 
-    final highlight = emergencyStyle != EmergencyStyle.none;
+    final highlight = widget.emergencyStyle != EmergencyStyle.none;
 
     Widget card(PhoneContact contact) => ContactCard(
       contact: contact,
-      palette: palette,
-      layout: layout,
+      palette: widget.palette,
+      layout: widget.layout,
       highlightEmergencyNumbers: highlight,
-      uppercaseNames: uppercaseNames,
+      uppercaseNames: widget.uppercaseNames,
       onSpeak: (text) => bloc.add(LabelSpoken(text)),
       onCall: (number) => bloc.add(CallRequested(number.number)),
     );
 
-    final useSection = emergencyStyle == EmergencyStyle.section;
+    final useSection = widget.emergencyStyle == EmergencyStyle.section;
     final favorites = useSection
         ? withoutEmergency(state.favorites)
         : state.favorites;
@@ -99,7 +133,7 @@ class ContactsPage extends StatelessWidget {
           SectionHeader(
             title: 'Favoris',
             icon: Icons.star,
-            palette: palette,
+            palette: widget.palette,
             onLongPress: () => _openSettings(context),
           ),
           ...favorites.map(card),
@@ -109,15 +143,15 @@ class ContactsPage extends StatelessWidget {
           SectionHeader(
             title: 'Urgence',
             icon: Icons.phone,
-            iconColor: paletteColors[palette]!.emergency,
-            palette: palette,
+            iconColor: paletteColors[widget.palette]!.emergency,
+            palette: widget.palette,
           ),
           ...emergency.map(card),
         ],
       [
         SectionHeader(
           title: 'Autres contacts',
-          palette: palette,
+          palette: widget.palette,
 
           onLongPress: state.showFavoritesSection
               ? null
@@ -135,6 +169,7 @@ class ContactsPage extends StatelessWidget {
     ];
 
     return ListView.builder(
+      controller: _scrollController,
       itemCount: children.length,
       itemBuilder: (context, index) => children[index],
     );
@@ -160,9 +195,9 @@ class ContactsPage extends StatelessWidget {
     await showDialog<void>(
       context: context,
       builder: (dialogContext) => Dialog.fullscreen(
-        backgroundColor: paletteColors[palette]!.background,
+        backgroundColor: paletteColors[widget.palette]!.background,
         child: MessageScreen(
-          palette: palette,
+          palette: widget.palette,
           message: message,
           actionLabel: 'FERMER',
           onAction: () => Navigator.of(dialogContext).pop(),

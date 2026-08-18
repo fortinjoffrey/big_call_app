@@ -248,4 +248,34 @@ void main() {
 
     expect(find.textContaining('Aucun contact'), findsOneWidget);
   });
+
+  testWidgets('retour au premier plan : la liste revient en haut', (
+    tester,
+  ) async {
+    tester.view.physicalSize = const Size(1080, 600);
+    tester.view.devicePixelRatio = 1.0;
+    addTearDown(tester.view.reset);
+    when(() => bloc.state).thenReturn(
+      const ContactsReady(
+        favorites: [joffrey, marie],
+        others: [anneMarie, docteur],
+        showFavoritesSection: true,
+      ),
+    );
+
+    await tester.pumpWidget(host());
+    await tester.drag(find.byType(ListView), const Offset(0, -200));
+    await tester.pump();
+
+    final controller = tester
+        .widget<ListView>(find.byType(ListView))
+        .controller!;
+    expect(controller.offset, greaterThan(0));
+
+    tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.paused);
+    tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.resumed);
+    await tester.pump();
+
+    expect(controller.offset, 0);
+  });
 }
