@@ -62,8 +62,8 @@ abstract class AppSettings with _$AppSettings {
 const kDefaultSettings = AppSettings(
   palette: AppPalette.light,
   textSize: TextSize.m,
-  layout: ContactLayout.compact,
+  layout: ContactLayout.wide,
   emergencyStyle: EmergencyStyle.section,
-  uppercaseNames: false,
-  speakScrollLetters: true,
+  uppercaseNames: true,
+  speakScrollLetters: false,
 );

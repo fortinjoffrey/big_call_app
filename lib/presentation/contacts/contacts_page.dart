@@ -149,7 +149,7 @@ class _ContactsPageState extends State<ContactsPage>
             title: 'Favoris',
             icon: Icons.star,
             palette: widget.palette,
-            onLongPress: () => _openSettings(context),
+            onSecretTaps: () => _openSettings(context),
           ),
           ...favorites.map(card),
         ],
@@ -167,8 +167,7 @@ class _ContactsPageState extends State<ContactsPage>
         SectionHeader(
           title: 'Autres contacts',
           palette: widget.palette,
-
-          onLongPress: state.showFavoritesSection
+          onSecretTaps: state.showFavoritesSection
               ? null
               : () => _openSettings(context),
         ),

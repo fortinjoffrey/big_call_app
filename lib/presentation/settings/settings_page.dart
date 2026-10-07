@@ -41,122 +41,174 @@ class SettingsPage extends StatelessWidget {
         title: Text('Réglages', style: theme.textTheme.titleLarge),
       ),
       body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(12),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              _Section(
-                title: 'Aperçu',
-                palette: settings.palette,
-                tiles: [_Preview(settings: settings)],
-              ),
-              _Section(
-                title: 'Thème',
-                palette: settings.palette,
-                tiles: [
-                  for (final palette in AppPalette.values)
-                    _ChoiceTile(
-                      label: palette.label,
-                      selected: palette == settings.palette,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            const _BackButton(),
+            Expanded(
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.all(12),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    _Section(
+                      title: 'Aperçu',
                       palette: settings.palette,
-                      onTap: () => context.read<SettingsBloc>().add(
-                        ThemeSelected(palette),
-                      ),
+                      tiles: [_Preview(settings: settings)],
                     ),
-                ],
-              ),
-              _Section(
-                title: 'Taille du texte',
-                palette: settings.palette,
-                tiles: [
-                  for (final size in TextSize.values)
-                    _ChoiceTile(
-                      label: size.label,
-                      selected: size == settings.textSize,
+                    _Section(
+                      title: 'Thème',
                       palette: settings.palette,
-                      onTap: () => context.read<SettingsBloc>().add(
-                        TextSizeSelected(size),
-                      ),
+                      tiles: [
+                        for (final palette in AppPalette.values)
+                          _ChoiceTile(
+                            label: palette.label,
+                            selected: palette == settings.palette,
+                            palette: settings.palette,
+                            onTap: () => context.read<SettingsBloc>().add(
+                              ThemeSelected(palette),
+                            ),
+                          ),
+                      ],
                     ),
-                ],
+                    _Section(
+                      title: 'Taille du texte',
+                      palette: settings.palette,
+                      tiles: [
+                        for (final size in TextSize.values)
+                          _ChoiceTile(
+                            label: size.label,
+                            selected: size == settings.textSize,
+                            palette: settings.palette,
+                            onTap: () => context.read<SettingsBloc>().add(
+                              TextSizeSelected(size),
+                            ),
+                          ),
+                      ],
+                    ),
+                    _Section(
+                      title: 'Nom des contacts',
+                      palette: settings.palette,
+                      tiles: [
+                        _ChoiceTile(
+                          label: 'MAJUSCULES',
+                          selected: settings.uppercaseNames,
+                          palette: settings.palette,
+                          onTap: () => context.read<SettingsBloc>().add(
+                            const UppercaseNamesSelected(true),
+                          ),
+                        ),
+                        _ChoiceTile(
+                          label: 'Normal',
+                          selected: !settings.uppercaseNames,
+                          palette: settings.palette,
+                          onTap: () => context.read<SettingsBloc>().add(
+                            const UppercaseNamesSelected(false),
+                          ),
+                        ),
+                      ],
+                    ),
+                    _Section(
+                      title: 'Annonce des lettres',
+                      palette: settings.palette,
+                      tiles: [
+                        _ChoiceTile(
+                          label: 'ACTIV\u00c9E',
+                          selected: settings.speakScrollLetters,
+                          palette: settings.palette,
+                          onTap: () => context.read<SettingsBloc>().add(
+                            const ScrollLettersSelected(true),
+                          ),
+                        ),
+                        _ChoiceTile(
+                          label: 'D\u00c9SACTIV\u00c9E',
+                          selected: !settings.speakScrollLetters,
+                          palette: settings.palette,
+                          onTap: () => context.read<SettingsBloc>().add(
+                            const ScrollLettersSelected(false),
+                          ),
+                        ),
+                      ],
+                    ),
+                    _Section(
+                      title: 'Disposition',
+                      palette: settings.palette,
+                      tiles: [
+                        for (final layout in ContactLayout.values)
+                          _ChoiceTile(
+                            label: layout.label,
+                            selected: layout == settings.layout,
+                            palette: settings.palette,
+                            onTap: () => context.read<SettingsBloc>().add(
+                              LayoutSelected(layout),
+                            ),
+                          ),
+                      ],
+                    ),
+                    _Section(
+                      title: "Numéros d'urgence",
+                      palette: settings.palette,
+                      isLast: true,
+                      tiles: [
+                        for (final style in EmergencyStyle.values)
+                          _ChoiceTile(
+                            label: style.label,
+                            selected: style == settings.emergencyStyle,
+                            palette: settings.palette,
+                            onTap: () => context.read<SettingsBloc>().add(
+                              EmergencyStyleSelected(style),
+                            ),
+                          ),
+                      ],
+                    ),
+                  ],
+                ),
               ),
-              _Section(
-                title: 'Nom des contacts',
-                palette: settings.palette,
-                tiles: [
-                  _ChoiceTile(
-                    label: 'MAJUSCULES',
-                    selected: settings.uppercaseNames,
-                    palette: settings.palette,
-                    onTap: () => context.read<SettingsBloc>().add(
-                      const UppercaseNamesSelected(true),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+const _backOrange = Color(0xFFFF7A00);
+const _onBackOrange = Color(0xFF000000);
+
+class _BackButton extends StatelessWidget {
+  const _BackButton();
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(12, 12, 12, 0),
+      child: Material(
+        color: _backOrange,
+        borderRadius: BorderRadius.circular(14),
+        clipBehavior: Clip.antiAlias,
+        child: InkWell(
+          onTap: () => Navigator.of(context).pop(),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 28),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Icon(Icons.arrow_back, size: 40, color: _onBackOrange),
+                const SizedBox(width: 12),
+                Flexible(
+                  child: Text(
+                    'RETOUR AUX CONTACTS',
+                    textAlign: TextAlign.center,
+                    style: theme.textTheme.titleLarge?.copyWith(
+                      color: _onBackOrange,
+                      fontWeight: FontWeight.bold,
                     ),
                   ),
-                  _ChoiceTile(
-                    label: 'Normal',
-                    selected: !settings.uppercaseNames,
-                    palette: settings.palette,
-                    onTap: () => context.read<SettingsBloc>().add(
-                      const UppercaseNamesSelected(false),
-                    ),
-                  ),
-                ],
-              ),
-              _Section(
-                title: 'Annonce des lettres',
-                palette: settings.palette,
-                tiles: [
-                  _ChoiceTile(
-                    label: 'ACTIV\u00c9E',
-                    selected: settings.speakScrollLetters,
-                    palette: settings.palette,
-                    onTap: () => context.read<SettingsBloc>().add(
-                      const ScrollLettersSelected(true),
-                    ),
-                  ),
-                  _ChoiceTile(
-                    label: 'D\u00c9SACTIV\u00c9E',
-                    selected: !settings.speakScrollLetters,
-                    palette: settings.palette,
-                    onTap: () => context.read<SettingsBloc>().add(
-                      const ScrollLettersSelected(false),
-                    ),
-                  ),
-                ],
-              ),
-              _Section(
-                title: 'Disposition',
-                palette: settings.palette,
-                tiles: [
-                  for (final layout in ContactLayout.values)
-                    _ChoiceTile(
-                      label: layout.label,
-                      selected: layout == settings.layout,
-                      palette: settings.palette,
-                      onTap: () => context.read<SettingsBloc>().add(
-                        LayoutSelected(layout),
-                      ),
-                    ),
-                ],
-              ),
-              _Section(
-                title: "Numéros d'urgence",
-                palette: settings.palette,
-                isLast: true,
-                tiles: [
-                  for (final style in EmergencyStyle.values)
-                    _ChoiceTile(
-                      label: style.label,
-                      selected: style == settings.emergencyStyle,
-                      palette: settings.palette,
-                      onTap: () => context.read<SettingsBloc>().add(
-                        EmergencyStyleSelected(style),
-                      ),
-                    ),
-                ],
-              ),
-            ],
+                ),
+              ],
+            ),
           ),
         ),
       ),

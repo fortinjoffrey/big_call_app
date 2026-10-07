@@ -37,6 +37,47 @@ void main() {
     ),
   );
 
+  testWidgets('le bouton orange RETOUR AUX CONTACTS ferme la page', (
+    tester,
+  ) async {
+    useTallSurface(tester);
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: buildTheme(AppPalette.light, TextSize.m),
+        home: Builder(
+          builder: (context) => TextButton(
+            onPressed: () => Navigator.of(context).push(
+              MaterialPageRoute<void>(
+                builder: (_) => BlocProvider<SettingsBloc>.value(
+                  value: bloc,
+                  child: const SettingsPage(),
+                ),
+              ),
+            ),
+            child: const Text('ouvrir'),
+          ),
+        ),
+      ),
+    );
+    await tester.tap(find.text('ouvrir'));
+    await tester.pumpAndSettle();
+    expect(find.byType(SettingsPage), findsOneWidget);
+
+    final button = find.ancestor(
+      of: find.text('RETOUR AUX CONTACTS'),
+      matching: find.byType(Material),
+    );
+    expect(
+      tester.widget<Material>(button.first).color,
+      const Color(0xFFFF7A00),
+    );
+
+    await tester.tap(find.text('RETOUR AUX CONTACTS'));
+    await tester.pumpAndSettle();
+
+    expect(find.byType(SettingsPage), findsNothing);
+  });
+
   testWidgets('propose les trois themes et les trois paliers', (tester) async {
     useTallSurface(tester);
     await tester.pumpWidget(host());
@@ -140,7 +181,7 @@ void main() {
       await tester.pumpWidget(host());
 
       expect(find.byType(ContactCard), findsNWidgets(2));
-      expect(find.text('Marie'), findsOneWidget);
+      expect(find.text('MARIE'), findsOneWidget);
       expect(find.text('SAMU'), findsOneWidget);
     },
   );

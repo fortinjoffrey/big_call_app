@@ -6,6 +6,7 @@ import 'package:big_call_app/presentation/contacts/contacts_bloc.dart';
 import 'package:big_call_app/presentation/contacts/contacts_event.dart';
 import 'package:big_call_app/presentation/contacts/contacts_page.dart';
 import 'package:big_call_app/presentation/contacts/contacts_state.dart';
+import 'package:big_call_app/presentation/contacts/widgets/section_header.dart';
 import 'package:big_call_app/presentation/settings/settings_bloc.dart';
 import 'package:big_call_app/presentation/settings/settings_event.dart';
 import 'package:big_call_app/presentation/settings/settings_page.dart';
@@ -42,6 +43,13 @@ void main() {
     when(() => settingsBloc.state).thenReturn(kDefaultSettings);
   });
 
+  Future<void> tapTimes(WidgetTester tester, Finder finder, int times) async {
+    for (var i = 0; i < times; i++) {
+      await tester.tap(finder);
+      await tester.pump(const Duration(milliseconds: 100));
+    }
+  }
+
   void useTallSurface(WidgetTester tester) {
     tester.view.physicalSize = const Size(1080, 2400);
     tester.view.devicePixelRatio = 1.0;
@@ -51,22 +59,21 @@ void main() {
   Widget host({
     EmergencyStyle emergencyStyle = EmergencyStyle.section,
     bool speakScrollLetters = true,
-  }) =>
-      MultiBlocProvider(
-        providers: [
-          BlocProvider<ContactsBloc>.value(value: bloc),
-          BlocProvider<SettingsBloc>.value(value: settingsBloc),
-        ],
-        child: MaterialApp(
-          theme: buildTheme(AppPalette.light, TextSize.m),
-          home: ContactsPage(
-            palette: AppPalette.light,
-            layout: ContactLayout.compact,
-            emergencyStyle: emergencyStyle,
-            speakScrollLetters: speakScrollLetters,
-          ),
-        ),
-      );
+  }) => MultiBlocProvider(
+    providers: [
+      BlocProvider<ContactsBloc>.value(value: bloc),
+      BlocProvider<SettingsBloc>.value(value: settingsBloc),
+    ],
+    child: MaterialApp(
+      theme: buildTheme(AppPalette.light, TextSize.m),
+      home: ContactsPage(
+        palette: AppPalette.light,
+        layout: ContactLayout.compact,
+        emergencyStyle: emergencyStyle,
+        speakScrollLetters: speakScrollLetters,
+      ),
+    ),
+  );
 
   testWidgets('affiche les deux sections quand les favoris sont disponibles', (
     tester,
@@ -87,7 +94,7 @@ void main() {
   });
 
   testWidgets(
-    'avec section favoris, l appui long sur son en-tete ouvre les reglages',
+    'avec section favoris, cinq appuis sur son en-tete ouvrent les reglages',
     (tester) async {
       useTallSurface(tester);
       when(() => bloc.state).thenReturn(
@@ -99,12 +106,70 @@ void main() {
       );
 
       await tester.pumpWidget(host());
-      await tester.longPress(find.text('FAVORIS'));
+      await tapTimes(tester, find.text('FAVORIS'), 5);
       await tester.pumpAndSettle();
 
       expect(find.byType(SettingsPage), findsOneWidget);
     },
   );
+
+  testWidgets(
+    'quatre appuis sur l en-tete favoris n ouvrent pas les reglages',
+    (tester) async {
+      useTallSurface(tester);
+      when(() => bloc.state).thenReturn(
+        const ContactsReady(
+          favorites: [joffrey, marie],
+          others: [anneMarie, docteur],
+          showFavoritesSection: true,
+        ),
+      );
+
+      await tester.pumpWidget(host());
+      await tapTimes(tester, find.text('FAVORIS'), 4);
+      await tester.pumpAndSettle();
+
+      expect(find.byType(SettingsPage), findsNothing);
+    },
+  );
+
+  testWidgets('les appuis trop espaces ne s additionnent pas', (tester) async {
+    useTallSurface(tester);
+    when(() => bloc.state).thenReturn(
+      const ContactsReady(
+        favorites: [joffrey, marie],
+        others: [anneMarie, docteur],
+        showFavoritesSection: true,
+      ),
+    );
+
+    await tester.pumpWidget(host());
+    await tapTimes(tester, find.text('FAVORIS'), 3);
+    await tester.pump(kSecretTapWindow + const Duration(milliseconds: 100));
+    await tapTimes(tester, find.text('FAVORIS'), 2);
+    await tester.pumpAndSettle();
+
+    expect(find.byType(SettingsPage), findsNothing);
+  });
+
+  testWidgets('l appui long sur l en-tete favoris n ouvre plus les reglages', (
+    tester,
+  ) async {
+    useTallSurface(tester);
+    when(() => bloc.state).thenReturn(
+      const ContactsReady(
+        favorites: [joffrey, marie],
+        others: [anneMarie, docteur],
+        showFavoritesSection: true,
+      ),
+    );
+
+    await tester.pumpWidget(host());
+    await tester.longPress(find.text('FAVORIS'));
+    await tester.pumpAndSettle();
+
+    expect(find.byType(SettingsPage), findsNothing);
+  });
 
   testWidgets(
     'style section : la section URGENCE se place entre FAVORIS et AUTRES CONTACTS',
@@ -215,7 +280,7 @@ void main() {
   );
 
   testWidgets(
-    'sans section favoris, l appui long sur l autre en-tete ouvre les reglages',
+    'sans section favoris, cinq appuis sur l autre en-tete ouvrent les reglages',
     (tester) async {
       useTallSurface(tester);
       when(() => bloc.state).thenReturn(
@@ -228,7 +293,7 @@ void main() {
 
       await tester.pumpWidget(host());
 
-      await tester.longPress(find.text('AUTRES CONTACTS'));
+      await tapTimes(tester, find.text('AUTRES CONTACTS'), 5);
       await tester.pumpAndSettle();
 
       expect(find.byType(SettingsPage), findsOneWidget);
