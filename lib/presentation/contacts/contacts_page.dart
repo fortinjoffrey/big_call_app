@@ -4,6 +4,7 @@ import 'package:big_call_app/domain/contact_initial.dart';
 import 'package:big_call_app/domain/emergency_grouping.dart';
 import 'package:big_call_app/domain/entities/app_settings.dart';
 import 'package:big_call_app/domain/entities/phone_contact.dart';
+import 'package:big_call_app/domain/spoken_time.dart';
 import 'package:big_call_app/presentation/contacts/contacts_bloc.dart';
 import 'package:big_call_app/presentation/contacts/contacts_event.dart';
 import 'package:big_call_app/presentation/contacts/contacts_state.dart';
@@ -11,6 +12,7 @@ import 'package:big_call_app/presentation/contacts/widgets/contact_card.dart';
 import 'package:big_call_app/presentation/contacts/widgets/letter_scroll_announcer.dart';
 import 'package:big_call_app/presentation/contacts/widgets/message_screen.dart';
 import 'package:big_call_app/presentation/contacts/widgets/section_header.dart';
+import 'package:big_call_app/presentation/contacts/widgets/time_button.dart';
 import 'package:big_call_app/presentation/settings/settings_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -22,6 +24,7 @@ class ContactsPage extends StatefulWidget {
     required this.emergencyStyle,
     this.uppercaseNames = false,
     this.speakScrollLetters = true,
+    this.now = DateTime.now,
     super.key,
   });
 
@@ -30,6 +33,8 @@ class ContactsPage extends StatefulWidget {
   final EmergencyStyle emergencyStyle;
   final bool uppercaseNames;
   final bool speakScrollLetters;
+
+  final DateTime Function() now;
 
   @override
   State<ContactsPage> createState() => _ContactsPageState();
@@ -176,6 +181,10 @@ class _ContactsPageState extends State<ContactsPage>
     ];
 
     final children = <Widget>[
+      TimeButton(
+        palette: widget.palette,
+        onPressed: () => bloc.add(LabelSpoken(spokenTime(widget.now()))),
+      ),
       for (var i = 0; i < sections.length; i++) ...[
         if (i > 0) const SizedBox(height: 20),
         ...sections[i],

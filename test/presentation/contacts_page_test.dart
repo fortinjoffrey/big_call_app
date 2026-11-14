@@ -7,6 +7,7 @@ import 'package:big_call_app/presentation/contacts/contacts_event.dart';
 import 'package:big_call_app/presentation/contacts/contacts_page.dart';
 import 'package:big_call_app/presentation/contacts/contacts_state.dart';
 import 'package:big_call_app/presentation/contacts/widgets/section_header.dart';
+import 'package:big_call_app/presentation/contacts/widgets/time_button.dart';
 import 'package:big_call_app/presentation/settings/settings_bloc.dart';
 import 'package:big_call_app/presentation/settings/settings_event.dart';
 import 'package:big_call_app/presentation/settings/settings_page.dart';
@@ -71,6 +72,7 @@ void main() {
         layout: ContactLayout.compact,
         emergencyStyle: emergencyStyle,
         speakScrollLetters: speakScrollLetters,
+        now: () => DateTime(2026, 11, 14, 18, 30),
       ),
     ),
   );
@@ -91,6 +93,33 @@ void main() {
 
     expect(find.text('FAVORIS'), findsOneWidget);
     expect(find.text('AUTRES CONTACTS'), findsOneWidget);
+  });
+
+  testWidgets("le bouton en haut de la liste lit l'heure a voix haute", (
+    tester,
+  ) async {
+    useTallSurface(tester);
+    when(() => bloc.state).thenReturn(
+      const ContactsReady(
+        favorites: [joffrey, marie],
+        others: [anneMarie, docteur],
+        showFavoritesSection: true,
+      ),
+    );
+
+    await tester.pumpWidget(host());
+
+    expect(
+      tester.getTopLeft(find.byType(TimeButton)).dy,
+      lessThan(tester.getTopLeft(find.text('FAVORIS')).dy),
+    );
+
+    await tester.tap(find.byType(TimeButton));
+
+    final spoken = verify(() => bloc.add(captureAny())).captured;
+    expect(spoken.whereType<LabelSpoken>().map((e) => e.text), [
+      'Il est dix-huit heures trente',
+    ]);
   });
 
   testWidgets(
@@ -407,7 +436,7 @@ void main() {
       await tester.pump();
     }
 
-    expect(spokenLabels(), ['A', 'B', 'C', 'D']);
+    expect(spokenLabels(), ['A', 'B', 'C', 'D', 'E']);
   });
 
   testWidgets('reglage desactive : aucune annonce pendant le scroll', (
